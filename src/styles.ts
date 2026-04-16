@@ -21,6 +21,8 @@ export const CARD_STYLES = `
     color: #111;
     -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
+    container-type: size;
+    container-name: card;
   }
 
   /* ── Energy background ── */
@@ -36,8 +38,9 @@ export const CARD_STYLES = `
   .card-content {
     position: relative;
     z-index: 1;
-    padding: 24px 24px 0;
-    flex-shrink: 0;
+    padding: 12px 16px 0;
+    flex: 0 1 auto;
+    overflow: hidden;
   }
 
   /* ── Header ── */
@@ -45,11 +48,11 @@ export const CARD_STYLES = `
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 24px;
+    margin-bottom: 8px;
   }
 
   .vehicle-name {
-    font-size: 1rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: #1a1a1a;
     letter-spacing: 0.02em;
@@ -70,7 +73,7 @@ export const CARD_STYLES = `
     display: flex;
     align-items: baseline;
     gap: 8px;
-    margin-bottom: 22px;
+    margin-bottom: 8px;
     line-height: 1;
   }
 
@@ -145,7 +148,7 @@ export const CARD_STYLES = `
   }
 
   .range-value {
-    font-size: 5rem;
+    font-size: clamp(1.8rem, 12cqh, 3.5rem);
     font-weight: 300;
     color: #111;
     letter-spacing: -0.025em;
@@ -153,7 +156,7 @@ export const CARD_STYLES = `
   }
 
   .range-unit {
-    font-size: 2rem;
+    font-size: clamp(0.9rem, 5cqh, 1.5rem);
     font-weight: 400;
     color: #222;
   }
@@ -168,8 +171,8 @@ export const CARD_STYLES = `
   .status-block {
     display: flex;
     flex-direction: column;
-    gap: 11px;
-    margin-bottom: 6px;
+    gap: 8px;
+    margin-bottom: 4px;
   }
 
   .status-row {
@@ -286,14 +289,14 @@ export const CARD_STYLES = `
     z-index: 1;
     display: flex;
     justify-content: center;
-    gap: 20px;
-    padding: 20px 24px 24px;
+    gap: 16px;
+    padding: 12px 20px 18px;
     flex-shrink: 0;
   }
 
   .circle-btn {
-    width: 56px;
-    height: 56px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     border: none;
     background: rgba(255,255,255,0.88);

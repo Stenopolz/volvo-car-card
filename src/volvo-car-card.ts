@@ -45,11 +45,11 @@ export class VolvoCarCard extends HTMLElement {
   }
 
   getCardSize(): number {
-    return 6;
+    return 8;
   }
 
   getGridOptions() {
-    return { rows: 6, columns: 12, min_columns: 2, min_rows: 5 };
+    return { rows: 8, columns: 12, min_columns: 2, min_rows: 6 };
   }
 
   static getConfigElement(): HTMLElement {
