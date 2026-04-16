@@ -71,32 +71,26 @@ export class VolvoCarCard extends HTMLElement {
   /**
    * HA calls this with (hass, entities, entitiesFallback) to pre-populate
    * a new card's YAML config. We scan hass.states for Volvo entities by
-   * looking for the canonical sensor key suffixes used by the integration.
+   * their canonical sensor key suffixes. All keys are always present so
+   * the code editor shows every field even when no value is auto-detected.
    */
   static getStubConfig(hass?: HomeAssistant): VolvoCardConfig {
-    const config: VolvoCardConfig = { type: "custom:volvo-car-card" };
-    if (!hass) return config;
+    const find = (domain: string, suffix: string): string =>
+      hass
+        ? Object.keys(hass.states).find(
+            (id) => id.startsWith(`${domain}.`) && id.endsWith(`_${suffix}`)
+          ) ?? ""
+        : "";
 
-    const ids = Object.keys(hass.states);
-
-    const find = (domain: string, suffix: string): string | undefined =>
-      ids.find(
-        (id) => id.startsWith(`${domain}.`) && id.endsWith(`_${suffix}`)
-      );
-
-    config.battery_entity = find("sensor", "battery_charge_level");
-    config.range_entity =
-      find("sensor", "distance_to_empty_battery") ??
-      find("sensor", "distance_to_empty_tank");
-    config.lock_entity = find("lock", "lock");
-    config.odometer_entity = find("sensor", "odometer");
-
-    // Remove undefined keys so the YAML is clean
-    (Object.keys(config) as (keyof VolvoCardConfig)[]).forEach((k) => {
-      if (config[k] === undefined) delete config[k];
-    });
-
-    return config;
+    return {
+      type: "custom:volvo-car-card",
+      battery_entity: find("sensor", "battery_charge_level"),
+      range_entity:
+        find("sensor", "distance_to_empty_battery") ||
+        find("sensor", "distance_to_empty_tank"),
+      lock_entity: find("lock", "lock"),
+      odometer_entity: find("sensor", "odometer"),
+    };
   }
 
   // ── DOM lifecycle ────────────────────────────────────────────────────────
