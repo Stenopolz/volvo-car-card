@@ -188,12 +188,7 @@ export class VolvoCarCard extends HTMLElement {
         <div class="actions-bar">
           ${lock_entity ? `
             <button class="circle-btn" id="btn-lock" title="${isLocked ? t.btn.unlock : t.btn.lock}">
-              ${isLocked ? ICON_LOCK : ICON_LOCK_OPEN}
-            </button>
-          ` : ""}
-          ${lock_entity && isLocked ? `
-            <button class="circle-btn" id="btn-unlock" title="${t.btn.unlock}">
-              ${ICON_LOCK_OPEN}
+              ${isLocked ? ICON_LOCK_OPEN : ICON_LOCK}
             </button>
           ` : ""}
           ${climate_entity ? `
@@ -330,17 +325,21 @@ export class VolvoCarCard extends HTMLElement {
   private _chargingLabel(
     state: HassEntity | null,
     batteryPct: number | null,
-    t: { state: { fully_charged: string; ready_to_drive: string; charge_scheduled: string } }
+    t: { state: { fully_charged: string; ready_to_drive: string; idle: string; charging: string; scheduled: string; discharging: string; error: string; done: string } }
   ): string {
     if (!state) {
       if (batteryPct !== null && batteryPct >= 100) return t.state.fully_charged;
       return t.state.ready_to_drive;
     }
-    const s = state.state.toLowerCase();
-    if (s.includes("charging")) return state.state;
-    if (s.includes("full"))     return t.state.fully_charged;
-    if (s.includes("schedul"))  return t.state.charge_scheduled;
-    return state.state || t.state.ready_to_drive;
+    switch (state.state.toLowerCase().trim()) {
+      case "idle":        return t.state.idle;
+      case "charging":    return t.state.charging;
+      case "scheduled":   return t.state.scheduled;
+      case "discharging": return t.state.discharging;
+      case "error":       return t.state.error;
+      case "done":        return t.state.done;
+      default:            return state.state || t.state.ready_to_drive;
+    }
   }
 
   private _getState(entityId: string | undefined): HassEntity | null {
@@ -389,11 +388,6 @@ export class VolvoCarCard extends HTMLElement {
       if (!lock_entity) return;
       const svc = isLocked ? "unlock" : "lock";
       this._callService("lock", svc, lock_entity);
-    });
-
-    root.getElementById("btn-unlock")?.addEventListener("click", () => {
-      if (!lock_entity) return;
-      this._callService("lock", "unlock", lock_entity);
     });
 
     root.getElementById("btn-climate")?.addEventListener("click", () => {

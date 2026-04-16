@@ -22,12 +22,22 @@ export interface Translations {
   /** Shown in the range area while an entity is reporting a non-numeric state. */
   updating: string;
   state: {
-    /** Battery is at 100 % and not charging. */
+    /** Shown when no charging entity is configured and battery is at 100 %. */
     fully_charged: string;
-    /** Car is idle with no active charging session. */
+    /** Shown when no charging entity is configured and car is idle. */
     ready_to_drive: string;
-    /** A scheduled charge is pending. */
-    charge_scheduled: string;
+    /** Charging status: IDLE — not currently charging. */
+    idle: string;
+    /** Charging status: CHARGING — actively charging. */
+    charging: string;
+    /** Charging status: SCHEDULED — charge timer is set. */
+    scheduled: string;
+    /** Charging status: DISCHARGING — battery is being discharged. */
+    discharging: string;
+    /** Charging status: ERROR — charging failed. */
+    error: string;
+    /** Charging status: DONE — session finished. */
+    done: string;
   };
   btn: {
     lock: string;

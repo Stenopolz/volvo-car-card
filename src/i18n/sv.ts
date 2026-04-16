@@ -8,7 +8,12 @@ export const sv: Translations = {
   state: {
     fully_charged: "Fulladdat",
     ready_to_drive: "Redo att köra",
-    charge_scheduled: "Laddning schemalagd",
+    idle: "Laddar inte",
+    charging: "Laddar",
+    scheduled: "Schemalagd",
+    discharging: "Urladdning",
+    error: "Laddningsfel",
+    done: "Fulladdat",
   },
   btn: {
     lock: "Lås",

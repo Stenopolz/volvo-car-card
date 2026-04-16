@@ -8,7 +8,12 @@ export const en: Translations = {
   state: {
     fully_charged: "Fully charged",
     ready_to_drive: "Ready to drive",
-    charge_scheduled: "Charge scheduled",
+    idle: "Not charging",
+    charging: "Charging",
+    scheduled: "Scheduled",
+    discharging: "Discharging",
+    error: "Charging error",
+    done: "Fully charged",
   },
   btn: {
     lock: "Lock",
