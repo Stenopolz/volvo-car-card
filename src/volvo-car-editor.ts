@@ -40,10 +40,14 @@ export class VolvoCarEditor extends HTMLElement {
   }
 
   connectedCallback(): void {
-    if (!this.shadowRoot) this.attachShadow({ mode: "open" });
-    this._buildDOM();
+    // Guard with a private flag — this.shadowRoot is unreliable with the
+    // scoped-custom-element-registry polyfill used by HA's Lit host.
+    if (!this._built) {
+      this.attachShadow({ mode: "open" });
+      this._buildDOM();
+      this._built = true;
+    }
     this._applyProperties();
-    this._built = true;
   }
 
   /** Build the static DOM structure once. */

@@ -31,7 +31,7 @@ const ICONS = {
 export class VolvoCarCard extends HTMLElement {
   private _config: VolvoCardConfig | null = null;
   private _hass: HomeAssistant | null = null;
-  private _shadowAttached = false;
+  private _initialized = false;
 
   // ── HA card lifecycle ────────────────────────────────────────────────────
 
@@ -39,7 +39,7 @@ export class VolvoCarCard extends HTMLElement {
   setConfig(config: VolvoCardConfig): void {
     if (!config) throw new Error("Invalid configuration");
     this._config = { ...config };
-    if (this._shadowAttached) this._render();
+    if (this._initialized) this._render();
   }
 
   /** Called by HA whenever any entity state changes. */
@@ -48,7 +48,7 @@ export class VolvoCarCard extends HTMLElement {
     this._hass = hass;
 
     // Only re-render if one of our configured entities changed
-    if (this._shadowAttached && this._config && this._statesChanged(prev, hass)) {
+    if (this._initialized && this._config && this._statesChanged(prev, hass)) {
       this._render();
     }
   }
@@ -102,15 +102,17 @@ export class VolvoCarCard extends HTMLElement {
   // ── DOM lifecycle ────────────────────────────────────────────────────────
 
   connectedCallback(): void {
-    if (!this.shadowRoot) {
+    // Use a private flag — the scoped-custom-element-registry polyfill used
+    // by HA makes this.shadowRoot unreliable as a guard against double attachment.
+    if (!this._initialized) {
       this.attachShadow({ mode: "open" });
+      this._initialized = true;
     }
-    this._shadowAttached = true;
     this._render();
   }
 
   disconnectedCallback(): void {
-    this._shadowAttached = false;
+    // Do not reset _initialized — shadow root persists across moves.
   }
 
   // ── Rendering ────────────────────────────────────────────────────────────
