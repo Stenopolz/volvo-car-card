@@ -47,7 +47,7 @@ export class VolvoCarCard extends HTMLElement {
   }
 
   getGridOptions() {
-    return { rows: 6, columns: 4, min_rows: 5 };
+    return { rows: 6, columns: 12, min_columns: 2, min_rows: 5 };
   }
 
   static getConfigElement(): HTMLElement {

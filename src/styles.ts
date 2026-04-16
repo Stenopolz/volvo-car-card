@@ -8,6 +8,7 @@ export const CARD_STYLES = `
   /* ── Card root ── */
   .card-root {
     position: relative;
+    width: 100%;
     background: var(--ha-card-background, #f4f4f3);
     border-radius: var(--ha-card-border-radius, 24px);
     box-shadow: var(--ha-card-box-shadow, 0 4px 20px rgba(0,0,0,.08));
@@ -15,6 +16,7 @@ export const CARD_STYLES = `
     font-family: var(--paper-font-body1_-_font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif);
     color: #111;
     -webkit-font-smoothing: antialiased;
+    box-sizing: border-box;
   }
 
   /* ── Energy background ── */
@@ -156,7 +158,6 @@ export const CARD_STYLES = `
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 130px;
   }
 
   .status-label.secondary {
