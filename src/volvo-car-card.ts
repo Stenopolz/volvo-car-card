@@ -68,9 +68,35 @@ export class VolvoCarCard extends HTMLElement {
     return document.createElement("volvo-car-editor");
   }
 
-  /** HA uses this to populate a new card with default/empty config. */
-  static getStubConfig(): VolvoCardConfig {
-    return { type: "custom:volvo-car-card" };
+  /**
+   * HA calls this with (hass, entities, entitiesFallback) to pre-populate
+   * a new card's YAML config. We scan hass.states for Volvo entities by
+   * looking for the canonical sensor key suffixes used by the integration.
+   */
+  static getStubConfig(hass?: HomeAssistant): VolvoCardConfig {
+    const config: VolvoCardConfig = { type: "custom:volvo-car-card" };
+    if (!hass) return config;
+
+    const ids = Object.keys(hass.states);
+
+    const find = (domain: string, suffix: string): string | undefined =>
+      ids.find(
+        (id) => id.startsWith(`${domain}.`) && id.endsWith(`_${suffix}`)
+      );
+
+    config.battery_entity = find("sensor", "battery_charge_level");
+    config.range_entity =
+      find("sensor", "distance_to_empty_battery") ??
+      find("sensor", "distance_to_empty_tank");
+    config.lock_entity = find("lock", "lock");
+    config.odometer_entity = find("sensor", "odometer");
+
+    // Remove undefined keys so the YAML is clean
+    (Object.keys(config) as (keyof VolvoCardConfig)[]).forEach((k) => {
+      if (config[k] === undefined) delete config[k];
+    });
+
+    return config;
   }
 
   // ── DOM lifecycle ────────────────────────────────────────────────────────
