@@ -164,7 +164,8 @@ export class VolvoCarCard extends HTMLElement {
           <!-- Header: vehicle name + version -->
           <div class="card-header">
             <span class="vehicle-name">${cardName}</span>
-            <span class="version-badge" title="${t.version_tooltip}">${VERSION}</span>
+            <!-- uncomment version badge when debugging -->
+            <!--<span class="version-badge" title="${t.version_tooltip}">${VERSION}</span>-->
           </div>
 
           <!-- Primary range metric -->
@@ -188,24 +189,36 @@ export class VolvoCarCard extends HTMLElement {
         <!-- Quick-action buttons -->
         <div class="actions-bar">
           ${lock_entity ? `
-            <button class="circle-btn" id="btn-lock" title="${isLocked ? t.btn.unlock : t.btn.lock}">
-              ${isLocked ? ICON_LOCK_OPEN : ICON_LOCK}
-            </button>
+            <div class="btn-wrap">
+              <button class="circle-btn" id="btn-lock" title="${isLocked ? t.btn.unlock : t.btn.lock}">
+                ${isLocked ? ICON_LOCK_OPEN : ICON_LOCK}
+              </button>
+              <span class="btn-label">${isLocked ? t.btn.unlock : t.btn.lock}</span>
+            </div>
           ` : ""}
           ${climate_entity ? `
-            <button class="circle-btn" id="btn-climate" title="${t.btn.climate}">
-              ${ICON_FAN}
-            </button>
+            <div class="btn-wrap">
+              <button class="circle-btn" id="btn-climate" title="${t.btn.climate}">
+                ${ICON_FAN}
+              </button>
+              <span class="btn-label">${t.btn.climate}</span>
+            </div>
           ` : ""}
           ${engine_start_entity ? `
-            <button class="circle-btn" id="btn-engine-start" title="${t.btn.engine_start}">
-              ${ICON_ENGINE_ON}
-            </button>
+            <div class="btn-wrap">
+              <button class="circle-btn" id="btn-engine-start" title="${t.btn.engine_start}">
+                ${ICON_ENGINE_ON}
+              </button>
+              <span class="btn-label">${t.btn.engine_start}</span>
+            </div>
           ` : ""}
           ${engine_stop_entity ? `
-            <button class="circle-btn" id="btn-engine-stop" title="${t.btn.engine_stop}">
-              ${ICON_ENGINE_OFF}
-            </button>
+            <div class="btn-wrap">
+              <button class="circle-btn" id="btn-engine-stop" title="${t.btn.engine_stop}">
+                ${ICON_ENGINE_OFF}
+              </button>
+              <span class="btn-label">${t.btn.engine_stop}</span>
+            </div>
           ` : ""}
         </div>
 

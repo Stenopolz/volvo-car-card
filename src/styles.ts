@@ -288,10 +288,29 @@ export const CARD_STYLES = `
     position: relative;
     z-index: 1;
     display: flex;
+    align-items: flex-start;
     justify-content: center;
     gap: 16px;
     padding: 12px 20px 18px;
     flex-shrink: 0;
+  }
+
+  .btn-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .btn-label {
+    font-size: 0.62rem;
+    font-weight: 500;
+    color: rgba(2,2,2,0.80);
+    text-align: center;
+    letter-spacing: 0.03em;
+    line-height: 1.3;
+    max-width: 60px;
+    pointer-events: none;
   }
 
   .circle-btn {
