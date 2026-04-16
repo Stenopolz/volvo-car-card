@@ -310,7 +310,7 @@ export class VolvoCarCard extends HTMLElement {
 
   private _energyBgStyle(batteryPct: number): string {
     const pct = Math.max(0, Math.min(100, batteryPct));
-    const edgeStart = `${Math.max(0, pct - 6)}%`;
+    const edgeStart = `${Math.max(0, pct - 1)}%`;
     const edgeEnd   = `${pct}%`;
     // Sharper green edge: full opacity up to near the cutoff, quick fade at the edge
     return `background: linear-gradient(to right,
