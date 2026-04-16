@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "build": "bun scripts/version.ts && bun build src/index.ts --outfile dist/volvo-car-card.js --target browser --minify",
-    "build:dev": "bun scripts/version.ts && bun build src/index.ts --outfile dist/volvo-car-card.js --target browser --sourcemap=external",
-    "watch": "bun scripts/version.ts && bun build src/index.ts --outfile dist/volvo-car-card.js --target browser --sourcemap=external --watch"
+    "build:dev": "bun scripts/version.ts && bun build src/index.ts --outfile dist/volvo-car-card.js --target browser --sourcemap=inline",
+    "watch": "bun scripts/version.ts && bun build src/index.ts --outfile dist/volvo-car-card.js --target browser --sourcemap=inline --watch"
   },
   "devDependencies": {
     "typescript": "^5.4.0"
