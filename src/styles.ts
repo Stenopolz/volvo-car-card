@@ -11,6 +11,7 @@ export const CARD_STYLES = `
     position: relative;
     width: 100%;
     height: 100%;
+    min-height: 320px;
     display: flex;
     flex-direction: column;
     background: var(--ha-card-background, #f4f4f3);
@@ -21,7 +22,7 @@ export const CARD_STYLES = `
     color: #111;
     -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
-    container-type: size;
+    container-type: inline-size;
     container-name: card;
   }
 
@@ -148,7 +149,7 @@ export const CARD_STYLES = `
   }
 
   .range-value {
-    font-size: clamp(1.8rem, 12cqh, 3.5rem);
+    font-size: clamp(1.8rem, 8cqw, 3.5rem);
     font-weight: 300;
     color: #111;
     letter-spacing: -0.025em;
@@ -156,7 +157,7 @@ export const CARD_STYLES = `
   }
 
   .range-unit {
-    font-size: clamp(0.9rem, 5cqh, 1.5rem);
+    font-size: clamp(0.9rem, 3.5cqw, 1.5rem);
     font-weight: 400;
     color: #222;
   }
@@ -252,7 +253,7 @@ export const CARD_STYLES = `
     position: relative;
     z-index: 1;
     flex: 1;
-    min-height: 0;
+    min-height: 160px;
     display: flex;
     justify-content: center;
     align-items: flex-end;
