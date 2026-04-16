@@ -67,14 +67,15 @@ export class VolvoCarCard extends HTMLElement {
 
     return {
       type: "custom:volvo-car-card",
-      battery_entity: find("sensor", "battery_charge_level"),
-      range_entity:
-        find("sensor", "distance_to_empty_battery") ||
-        find("sensor", "distance_to_empty_tank"),
+      battery_entity: find("sensor", "battery"),
+      battery_range_entity: find("sensor", "distance_to_empty_battery"),
       fuel_entity: find("sensor", "fuel_amount"),
       fuel_range_entity: find("sensor", "distance_to_empty_tank"),
       lock_entity: find("lock", "lock"),
-      charging_status_entity: find("sensor", "charging_system_status"),
+      charging_status_entity: find("sensor", "charging_status"),
+      climate_entity: find("button", "start_climatization"),
+      engine_start_entity: find("button", "start_engine"),
+      engine_stop_entity: find("button", "stop_engine"),
       vehicle_image_entity: find("camera", "exterior"),
     };
   }
@@ -108,7 +109,7 @@ export class VolvoCarCard extends HTMLElement {
 
     const {
       battery_entity,
-      range_entity,
+      battery_range_entity,
       lock_entity,
       fuel_entity,
       fuel_range_entity,
@@ -121,7 +122,7 @@ export class VolvoCarCard extends HTMLElement {
     } = this._config;
 
     const batteryState     = this._getState(battery_entity);
-    const rangeState       = this._getState(range_entity);
+    const rangeState       = this._getState(battery_range_entity);
     const lockState        = this._getState(lock_entity);
     const fuelState        = this._getState(fuel_entity);
     const fuelRangeState   = this._getState(fuel_range_entity);
@@ -361,7 +362,7 @@ export class VolvoCarCard extends HTMLElement {
     if (!prev || !this._config) return true;
     const entities = [
       this._config.battery_entity,
-      this._config.range_entity,
+      this._config.battery_range_entity,
       this._config.lock_entity,
       this._config.fuel_entity,
       this._config.fuel_range_entity,

@@ -32,7 +32,7 @@ export interface VolvoCardConfig {
   /** Entity ID of the battery charge level sensor, e.g. sensor.xc40_battery_charge_level */
   battery_entity?: string;
   /** Entity ID of the electric range sensor, e.g. sensor.xc40_distance_to_empty_battery */
-  range_entity?: string;
+  battery_range_entity?: string;
   /** Entity ID of the lock entity, e.g. lock.xc40_lock */
   lock_entity?: string;
   /** Entity ID of the odometer sensor, e.g. sensor.xc40_odometer */

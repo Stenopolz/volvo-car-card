@@ -1,17 +1,17 @@
 import type { HomeAssistant, VolvoCardConfig } from "./types.js";
 
 const LABELS: Record<string, string> = {
-  name: "Card name (optional)",
-  battery_entity: "Battery level entity (sensor)",
-  range_entity: "Electric range entity (sensor)",
-  fuel_entity: "Fuel level entity (sensor)",
-  fuel_range_entity: "Fuel range entity (sensor)",
+  name: "Card name",
+  battery_entity: "Battery level entity",
+  battery_range_entity: "Battery range entity",
+  fuel_entity: "Fuel level entity",
+  fuel_range_entity: "Fuel range entity",
   lock_entity: "Lock entity",
-  charging_status_entity: "Charging status entity (sensor, optional)",
-  climate_entity: "Start climate entity (button, optional)",
-  engine_start_entity: "Engine start entity (button)",
-  engine_stop_entity: "Engine stop entity (button)",
-  vehicle_image_entity: "Vehicle image entity (camera/image, optional)",
+  charging_status_entity: "Charging status entity",
+  climate_entity: "Start climate entity",
+  engine_start_entity: "Engine start entity",
+  engine_stop_entity: "Engine stop entity",
+  vehicle_image_entity: "Vehicle image entity",
 };
 
 /**
@@ -26,7 +26,7 @@ const SCHEMA = [
     selector: { entity: { filter: [{ domain: "sensor" }] } },
   },
   {
-    name: "range_entity",
+    name: "battery_range_entity",
     selector: { entity: { filter: [{ domain: "sensor" }] } },
   },
   {
@@ -47,7 +47,7 @@ const SCHEMA = [
   },
   {
     name: "climate_entity",
-    selector: { entity: { filter: [{ domain: "climate" }, { domain: "button" }] } },
+    selector: { entity: { filter: [{ domain: "button" }] } },
   },
   {
     name: "engine_start_entity",
