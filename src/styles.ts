@@ -2,168 +2,257 @@ export const CARD_STYLES = `
   :host {
     display: block;
     box-sizing: border-box;
+    width: 100%;
   }
 
+  /* ── Card root ── */
   .card-root {
-    background: var(--ha-card-background, var(--card-background-color, #fff));
-    border-radius: var(--ha-card-border-radius, 12px);
-    box-shadow: var(--ha-card-box-shadow, 0 2px 6px rgba(0,0,0,.15));
-    padding: 16px;
-    color: var(--primary-text-color);
-    font-family: var(--paper-font-body1_-_font-family, sans-serif);
+    position: relative;
+    background: var(--ha-card-background, #f4f4f3);
+    border-radius: var(--ha-card-border-radius, 24px);
+    box-shadow: var(--ha-card-box-shadow, 0 4px 20px rgba(0,0,0,.08));
+    overflow: hidden;
+    font-family: var(--paper-font-body1_-_font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif);
+    color: #111;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Energy background ── */
+  .energy-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    transition: background 0.6s ease;
+  }
+
+  /* ── Content layer ── */
+  .card-content {
+    position: relative;
+    z-index: 1;
+    padding: 24px 24px 0;
   }
 
   /* ── Header ── */
   .card-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
+    justify-content: space-between;
+    margin-bottom: 24px;
   }
 
-  .card-header svg {
-    flex-shrink: 0;
-    width: 48px;
-    height: 48px;
-    fill: var(--primary-color);
-  }
-
-  .card-header-text {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .card-title {
-    font-size: 1.2rem;
+  .vehicle-name {
+    font-size: 1rem;
     font-weight: 600;
-    line-height: 1.2;
+    color: #1a1a1a;
+    letter-spacing: 0.02em;
   }
 
-  .card-subtitle {
-    font-size: 0.8rem;
-    color: var(--secondary-text-color);
+  .version-badge {
+    font-size: 0.6rem;
+    padding: 3px 7px;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.06);
+    color: #666;
+    font-family: monospace;
+    white-space: nowrap;
   }
 
-  /* ── Stats grid ── */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 16px;
+  /* ── Primary range metric ── */
+  .range-metric {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 22px;
+    line-height: 1;
   }
 
-  .stat-card {
-    background: var(--secondary-background-color, rgba(0,0,0,.04));
-    border-radius: 8px;
-    padding: 12px;
+  .range-value {
+    font-size: 5rem;
+    font-weight: 300;
+    color: #111;
+    letter-spacing: -0.025em;
+    line-height: 1;
+  }
+
+  .range-unit {
+    font-size: 2rem;
+    font-weight: 400;
+    color: #222;
+  }
+
+  .range-unavailable {
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: #999;
+  }
+
+  /* ── Energy status block ── */
+  .status-block {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 11px;
+    margin-bottom: 6px;
   }
 
-  .stat-label {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--secondary-text-color);
-  }
-
-  .stat-value {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--primary-text-color);
-  }
-
-  .stat-unit {
-    font-size: 0.8rem;
-    color: var(--secondary-text-color);
-    font-weight: 400;
-  }
-
-  /* ── Battery bar ── */
-  .battery-bar-wrap {
-    background: var(--divider-color, rgba(0,0,0,.12));
-    border-radius: 4px;
-    height: 6px;
-    margin-top: 4px;
-    overflow: hidden;
-  }
-
-  .battery-bar {
-    height: 100%;
-    border-radius: 4px;
-    background: var(--primary-color);
-    transition: width .4s ease;
-  }
-
-  .battery-bar.low {
-    background: var(--error-color, #db4437);
-  }
-
-  /* ── Actions ── */
-  .actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .action-btn {
-    display: inline-flex;
+  .status-row {
+    display: grid;
+    grid-template-columns: 22px 46px 1fr auto;
     align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: opacity .2s;
-    background: var(--primary-color);
-    color: var(--text-primary-color, #fff);
+    gap: 10px;
   }
 
-  .action-btn:hover {
-    opacity: 0.85;
+  .status-icon {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #333;
   }
 
-  .action-btn:active {
-    opacity: 0.7;
-  }
-
-  .action-btn.secondary {
-    background: var(--secondary-background-color, rgba(0,0,0,.08));
-    color: var(--primary-text-color);
-  }
-
-  .action-btn svg {
-    width: 18px;
-    height: 18px;
+  .status-icon svg {
+    width: 20px;
+    height: 20px;
     fill: currentColor;
   }
 
-  /* ── Version badge ── */
-  .version-badge {
-    margin-left: auto;
-    font-size: 0.65rem;
-    padding: 2px 6px;
-    border-radius: 4px;
-    background: var(--secondary-background-color, rgba(0,0,0,.07));
-    color: var(--secondary-text-color);
-    font-family: monospace;
+  .status-pct {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #111;
     white-space: nowrap;
-    align-self: flex-start;
+    text-align: right;
   }
 
-  /* ── Error / unavailable ── */
+  .status-pct.secondary {
+    font-weight: 500;
+    color: #444;
+  }
+
+  /* ── Segmented progress bar ── */
+  .seg-bar {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+
+  .seg {
+    height: 6px;
+    flex: 1;
+    border-radius: 3px;
+    background: rgba(0,0,0,0.1);
+  }
+
+  .seg.green { background: #22c55e; }
+  .seg.blue  { background: #3b82f6; }
+
+  /* ── Status label ── */
+  .status-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #222;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 130px;
+  }
+
+  .status-label.secondary {
+    font-weight: 400;
+    color: #555;
+  }
+
+  /* ── Hero image zone ── */
+  .hero-zone {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 16px 0 0;
+    min-height: 160px;
+  }
+
+  .car-image {
+    max-width: 100%;
+    max-height: 210px;
+    width: 100%;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.12));
+  }
+
+  .hero-placeholder {
+    width: 100%;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-placeholder svg {
+    width: 96px;
+    height: 96px;
+    fill: rgba(0,0,0,0.08);
+  }
+
+  /* ── Quick-action buttons ── */
+  .actions-bar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px 24px 24px;
+  }
+
+  .circle-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.88);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .circle-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.14), 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  .circle-btn:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+
+  .circle-btn svg {
+    width: 22px;
+    height: 22px;
+    fill: #1a1a1a;
+    pointer-events: none;
+  }
+
+  /* ── Error ── */
   .error-box {
-    padding: 12px;
-    border-radius: 8px;
-    background: var(--error-color, #db4437);
-    color: #fff;
+    padding: 16px;
+    border-radius: 12px;
+    background: #fef2f2;
+    color: #dc2626;
     font-size: 0.9rem;
+    margin: 16px;
   }
 
+  /* ── Unavailable text ── */
   .unavailable {
-    color: var(--disabled-text-color, rgba(0,0,0,.38));
+    color: #aaa;
   }
 `;
+

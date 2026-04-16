@@ -1,3 +1,5 @@
 node_modules/
 .DS_Store
 *.js.map
+design-system-icons/
+card-ui-design-requirements.txt

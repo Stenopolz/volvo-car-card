@@ -1,28 +1,20 @@
 import type { HomeAssistant, HassEntity, VolvoCardConfig } from "./types.js";
 import { CARD_STYLES } from "./styles.js";
 import { VERSION } from "./version.js";
+import {
+  ICON_BOLT,
+  ICON_FUEL_PUMP,
+  ICON_LOCK,
+  ICON_LOCK_OPEN,
+  ICON_FAN,
+} from "./icons/index.js";
 
-/** SVG icons used within the card */
-const ICONS = {
-  car: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
-  </svg>`,
-  battery: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/>
-  </svg>`,
-  lock: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
-  </svg>`,
-  unlock: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 13c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-5h-1V6c0-2.76-2.24-5-5-5-2.28 0-4.27 1.54-4.84 3.75l1.94.49C9.43 3.91 10.63 3 12 3c1.65 0 3 1.35 3 3v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"/>
-  </svg>`,
-  range: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M13.49 5.48c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/>
-  </svg>`,
-  odometer: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/>
-  </svg>`,
-};
+/** Placeholder car silhouette shown when no vehicle_image_entity is configured. */
+const CAR_PLACEHOLDER_SVG = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+</svg>`;
+
+const SEGMENTS = 10;
 
 /**
  * Volvo Car Card – main custom element.
@@ -36,45 +28,32 @@ export class VolvoCarCard extends HTMLElement {
 
   // ── HA card lifecycle ────────────────────────────────────────────────────
 
-  /** Called by HA with the config from the dashboard YAML. */
   setConfig(config: VolvoCardConfig): void {
     if (!config) throw new Error("Invalid configuration");
     this._config = { ...config };
     if (this._initialized) this._render();
   }
 
-  /** Called by HA whenever any entity state changes. */
   set hass(hass: HomeAssistant) {
     const prev = this._hass;
     this._hass = hass;
-
-    // Only re-render if one of our configured entities changed
     if (this._initialized && this._config && this._statesChanged(prev, hass)) {
       this._render();
     }
   }
 
-  /** HA uses this to estimate card height in the masonry view (1 unit = 50px). */
   getCardSize(): number {
-    return 4;
+    return 6;
   }
 
-  /** HA uses this for sizing in the sections view. */
   getGridOptions() {
-    return { rows: 4, columns: 6, min_rows: 3 };
+    return { rows: 6, columns: 4, min_rows: 5 };
   }
 
-  /** HA calls this to get the editor element for the visual card editor. */
   static getConfigElement(): HTMLElement {
     return document.createElement("volvo-car-editor");
   }
 
-  /**
-   * HA calls this with (hass, entities, entitiesFallback) to pre-populate
-   * a new card's YAML config. We scan hass.states for Volvo entities by
-   * their canonical sensor key suffixes. All keys are always present so
-   * the code editor shows every field even when no value is auto-detected.
-   */
   static getStubConfig(hass?: HomeAssistant): VolvoCardConfig {
     const find = (domain: string, suffix: string): string =>
       hass
@@ -89,16 +68,17 @@ export class VolvoCarCard extends HTMLElement {
       range_entity:
         find("sensor", "distance_to_empty_battery") ||
         find("sensor", "distance_to_empty_tank"),
+      fuel_entity: find("sensor", "fuel_amount"),
+      fuel_range_entity: find("sensor", "distance_to_empty_tank"),
       lock_entity: find("lock", "lock"),
-      odometer_entity: find("sensor", "odometer"),
+      charging_status_entity: find("sensor", "charging_system_status"),
+      vehicle_image_entity: find("camera", "exterior"),
     };
   }
 
   // ── DOM lifecycle ────────────────────────────────────────────────────────
 
   connectedCallback(): void {
-    // Use a private flag — the scoped-custom-element-registry polyfill used
-    // by HA makes this.shadowRoot unreliable as a guard against double attachment.
     if (!this._initialized) {
       this.attachShadow({ mode: "open" });
       this._initialized = true;
@@ -107,7 +87,7 @@ export class VolvoCarCard extends HTMLElement {
   }
 
   disconnectedCallback(): void {
-    // Do not reset _initialized — shadow root persists across moves.
+    // Shadow root persists across moves; do not reset _initialized.
   }
 
   // ── Rendering ────────────────────────────────────────────────────────────
@@ -121,52 +101,96 @@ export class VolvoCarCard extends HTMLElement {
       return;
     }
 
-    const { battery_entity, range_entity, lock_entity, odometer_entity, name } =
-      this._config;
+    const {
+      battery_entity,
+      range_entity,
+      lock_entity,
+      fuel_entity,
+      fuel_range_entity,
+      charging_status_entity,
+      climate_entity,
+      vehicle_image_entity,
+      name,
+    } = this._config;
 
-    const batteryState = this._getState(battery_entity);
-    const rangeState = this._getState(range_entity);
-    const lockState = this._getState(lock_entity);
-    const odometerState = this._getState(odometer_entity);
+    const batteryState     = this._getState(battery_entity);
+    const rangeState       = this._getState(range_entity);
+    const lockState        = this._getState(lock_entity);
+    const fuelState        = this._getState(fuel_entity);
+    const fuelRangeState   = this._getState(fuel_range_entity);
+    const chargingState    = this._getState(charging_status_entity);
+    const imageState       = this._getState(vehicle_image_entity);
 
-    const isLocked = lockState?.state === "locked";
-    const batteryPct = batteryState ? parseFloat(batteryState.state) : null;
-    const rangeKm = rangeState ? parseFloat(rangeState.state) : null;
-    const odometerKm = odometerState ? parseFloat(odometerState.state) : null;
+    const batteryPct   = batteryState  ? parseFloat(batteryState.state)  : null;
+    const rangeKm      = rangeState    ? parseFloat(rangeState.state)    : null;
+    const fuelPct      = fuelState     ? parseFloat(fuelState.state)     : null;
+    const fuelRangeKm  = fuelRangeState ? parseFloat(fuelRangeState.state) : null;
 
-    const cardName = name ?? this._deriveName(lockState ?? batteryState);
-    const batteryLow = batteryPct !== null && batteryPct < 20;
+    const isLocked    = lockState?.state === "locked";
+    const isEV        = battery_entity != null;
+    const cardName    = name ?? this._deriveName(lockState ?? batteryState ?? fuelState);
+
+    // Energy background: use battery % for EV/hybrid, fuel % for ICE-only
+    const energyPct     = isEV ? (batteryPct ?? 0) : (fuelPct ?? 0);
+    const energyBgStyle = this._energyBgStyle(energyPct, isEV);
+
+    // Vehicle image URL from entity_picture attribute
+    const imageUrl = imageState
+      ? (imageState.attributes["entity_picture"] as string | undefined) ?? ""
+      : "";
+
+    // Charging status label
+    const chargingLabel = this._chargingLabel(chargingState, batteryPct);
 
     this.shadowRoot.innerHTML = `
       <style>${CARD_STYLES}</style>
       <div class="card-root">
 
-        <!-- Header -->
-        <div class="card-header">
-          ${ICONS.car}
-          <div class="card-header-text">
-            <span class="card-title">${cardName}</span>
-            <span class="card-subtitle">Volvo</span>
+        <!-- Energy background layer -->
+        <div class="energy-bg" style="${energyBgStyle}"></div>
+
+        <!-- Top content -->
+        <div class="card-content">
+
+          <!-- Header: vehicle name + version -->
+          <div class="card-header">
+            <span class="vehicle-name">${cardName}</span>
+            <span class="version-badge" title="Build version">${VERSION}</span>
           </div>
-          <span class="version-badge" title="Build version">${VERSION}</span>
+
+          <!-- Primary range metric -->
+          ${this._renderRangeMetric(rangeKm, rangeState)}
+
+          <!-- Energy status rows -->
+          <div class="status-block">
+            ${isEV ? this._renderChargeRow(batteryPct, chargingLabel) : ""}
+            ${this._renderFuelRow(fuelPct, fuelRangeKm, isEV)}
+          </div>
+
         </div>
 
-        <!-- Stats grid -->
-        <div class="stats-grid">
-          ${this._renderBatteryStat(batteryPct, batteryLow)}
-          ${this._renderSimpleStat("Range", rangeKm, "km", ICONS.range)}
-          ${this._renderSimpleStat("Odometer", odometerKm ? Math.round(odometerKm) : null, "km", ICONS.odometer)}
-          ${this._renderLockStat(isLocked, !!lockState)}
+        <!-- Vehicle hero image -->
+        <div class="hero-zone">
+          ${imageUrl
+            ? `<img class="car-image" src="${imageUrl}" alt="${cardName}" />`
+            : `<div class="hero-placeholder">${CAR_PLACEHOLDER_SVG}</div>`}
         </div>
 
-        <!-- Actions -->
-        <div class="actions">
+        <!-- Quick-action buttons -->
+        <div class="actions-bar">
           ${lock_entity ? `
-            <button class="action-btn" id="btn-lock" title="Lock">
-              ${ICONS.lock} Lock
+            <button class="circle-btn" id="btn-lock" title="${isLocked ? "Unlock" : "Lock"}">
+              ${isLocked ? ICON_LOCK : ICON_LOCK_OPEN}
             </button>
-            <button class="action-btn secondary" id="btn-unlock" title="Unlock">
-              ${ICONS.unlock} Unlock
+          ` : ""}
+          ${lock_entity && isLocked ? `
+            <button class="circle-btn" id="btn-unlock" title="Unlock">
+              ${ICON_LOCK_OPEN}
+            </button>
+          ` : ""}
+          ${climate_entity ? `
+            <button class="circle-btn" id="btn-climate" title="Start climate">
+              ${ICON_FAN}
             </button>
           ` : ""}
         </div>
@@ -174,63 +198,101 @@ export class VolvoCarCard extends HTMLElement {
       </div>
     `;
 
-    // Attach button handlers after rendering
-    this.shadowRoot.getElementById("btn-lock")?.addEventListener("click", () =>
-      this._callService("lock", "lock", lock_entity!)
-    );
-    this.shadowRoot.getElementById("btn-unlock")?.addEventListener("click", () =>
-      this._callService("lock", "unlock", lock_entity!)
-    );
+    this._attachHandlers(lock_entity, isLocked, climate_entity);
   }
 
-  private _renderBatteryStat(pct: number | null, low: boolean): string {
-    const display = pct !== null ? `${Math.round(pct)}` : "—";
-    const barWidth = pct !== null ? Math.round(pct) : 0;
+  // ── Sub-renderers ────────────────────────────────────────────────────────
+
+  private _renderRangeMetric(rangeKm: number | null, rangeState: HassEntity | null): string {
+    if (!rangeState) {
+      return `<div class="range-metric"><span class="range-unavailable">— km</span></div>`;
+    }
+    if (rangeKm === null || isNaN(rangeKm)) {
+      return `<div class="range-metric"><span class="range-unavailable">Updating…</span></div>`;
+    }
     return `
-      <div class="stat-card">
-        <span class="stat-label">Battery</span>
-        <span class="stat-value ${pct === null ? "unavailable" : ""}">
-          ${display}<span class="stat-unit"> %</span>
-        </span>
-        <div class="battery-bar-wrap">
-          <div class="battery-bar ${low ? "low" : ""}" style="width:${barWidth}%"></div>
-        </div>
+      <div class="range-metric">
+        <span class="range-value">${Math.round(rangeKm).toLocaleString()}</span>
+        <span class="range-unit">km</span>
       </div>
     `;
   }
 
-  private _renderSimpleStat(
-    label: string,
-    value: number | null,
-    unit: string,
-    _icon: string
-  ): string {
-    const display = value !== null ? `${value.toLocaleString()}` : "—";
+  private _renderChargeRow(pct: number | null, label: string): string {
+    const display = pct !== null ? `${Math.round(pct)}%` : "—";
     return `
-      <div class="stat-card">
-        <span class="stat-label">${label}</span>
-        <span class="stat-value ${value === null ? "unavailable" : ""}">
-          ${display}<span class="stat-unit"> ${unit}</span>
-        </span>
+      <div class="status-row">
+        <span class="status-icon">${ICON_BOLT}</span>
+        <span class="status-pct">${display}</span>
+        ${this._renderSegBar(pct, "green")}
+        <span class="status-label">${label}</span>
       </div>
     `;
   }
 
-  private _renderLockStat(isLocked: boolean, available: boolean): string {
-    const label = available ? (isLocked ? "Locked" : "Unlocked") : "—";
-    const icon = isLocked ? ICONS.lock : ICONS.unlock;
+  private _renderFuelRow(pct: number | null, rangeKm: number | null, isEV: boolean): string {
+    // Omit the row entirely for EV-only vehicles with no fuel data
+    if (pct === null && !this._config?.fuel_entity) return "";
+
+    const display = pct !== null ? `${Math.round(pct)}%` : "—";
+    const rangeLabel = rangeKm !== null && !isNaN(rangeKm)
+      ? `${Math.round(rangeKm)} km`
+      : "—";
+
     return `
-      <div class="stat-card">
-        <span class="stat-label">Lock</span>
-        <span class="stat-value ${!available ? "unavailable" : ""}" style="display:flex;align-items:center;gap:6px;font-size:1rem;">
-          ${available ? icon : ""}
-          ${label}
-        </span>
+      <div class="status-row">
+        <span class="status-icon">${ICON_FUEL_PUMP}</span>
+        <span class="status-pct secondary">${display}</span>
+        ${this._renderSegBar(pct, "blue")}
+        <span class="status-label secondary">${rangeLabel}</span>
       </div>
     `;
+  }
+
+  private _renderSegBar(pct: number | null, color: "green" | "blue"): string {
+    const filled = pct !== null && !isNaN(pct) ? Math.round(pct / (100 / SEGMENTS)) : 0;
+    const segs = Array.from({ length: SEGMENTS }, (_, i) =>
+      `<span class="seg ${i < filled ? color : ""}"></span>`
+    ).join("");
+    return `<div class="seg-bar">${segs}</div>`;
+  }
+
+  // ── Energy background ────────────────────────────────────────────────────
+
+  private _energyBgStyle(pct: number, isEV: boolean): string {
+    const pctStr = `${Math.max(0, Math.min(100, pct))}%`;
+    const fadeStart = `${Math.max(0, pct - 18)}%`;
+
+    if (isEV) {
+      // Green diffusion – mint / soft lime
+      return `background: linear-gradient(to right,
+        rgba(134,239,172,0.30) 0%,
+        rgba(74,222,128,0.22) ${fadeStart},
+        rgba(74,222,128,0.04) ${pctStr},
+        transparent 100%);`;
+    } else {
+      // Blue diffusion – pale azure / icy blue
+      return `background: linear-gradient(to right,
+        rgba(147,197,253,0.30) 0%,
+        rgba(59,130,246,0.20) ${fadeStart},
+        rgba(59,130,246,0.04) ${pctStr},
+        transparent 100%);`;
+    }
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────
+
+  private _chargingLabel(state: HassEntity | null, batteryPct: number | null): string {
+    if (!state) {
+      if (batteryPct !== null && batteryPct >= 100) return "Fully charged";
+      return "Ready to drive";
+    }
+    const s = state.state.toLowerCase();
+    if (s.includes("charging")) return state.state;
+    if (s.includes("full"))     return "Fully charged";
+    if (s.includes("schedul"))  return "Charge scheduled";
+    return state.state || "Ready to drive";
+  }
 
   private _getState(entityId: string | undefined): HassEntity | null {
     if (!entityId || !this._hass) return null;
@@ -239,25 +301,52 @@ export class VolvoCarCard extends HTMLElement {
 
   private _deriveName(state: HassEntity | null): string {
     if (!state) return "Volvo";
-    // Strip the sensor key suffix to get the friendly name, e.g.
-    // "XC40 Battery Charge Level" → "XC40"
     const friendly = (state.attributes["friendly_name"] as string | undefined) ?? "";
-    return friendly.replace(/\s+(battery.*|lock.*|odometer.*|distance.*)$/i, "").trim() || "Volvo";
+    return (
+      friendly
+        .replace(/\s+(battery.*|lock.*|odometer.*|distance.*|fuel.*|charging.*|camera.*)$/i, "")
+        .trim() || "Volvo"
+    );
   }
 
-  private _statesChanged(
-    prev: HomeAssistant | null,
-    next: HomeAssistant
-  ): boolean {
+  private _statesChanged(prev: HomeAssistant | null, next: HomeAssistant): boolean {
     if (!prev || !this._config) return true;
     const entities = [
       this._config.battery_entity,
       this._config.range_entity,
       this._config.lock_entity,
-      this._config.odometer_entity,
+      this._config.fuel_entity,
+      this._config.fuel_range_entity,
+      this._config.charging_status_entity,
+      this._config.climate_entity,
+      this._config.vehicle_image_entity,
     ].filter(Boolean) as string[];
 
     return entities.some((id) => prev.states[id] !== next.states[id]);
+  }
+
+  private _attachHandlers(
+    lock_entity: string | undefined,
+    isLocked: boolean,
+    climate_entity: string | undefined
+  ): void {
+    const root = this.shadowRoot!;
+
+    root.getElementById("btn-lock")?.addEventListener("click", () => {
+      if (!lock_entity) return;
+      const svc = isLocked ? "unlock" : "lock";
+      this._callService("lock", svc, lock_entity);
+    });
+
+    root.getElementById("btn-unlock")?.addEventListener("click", () => {
+      if (!lock_entity) return;
+      this._callService("lock", "unlock", lock_entity);
+    });
+
+    root.getElementById("btn-climate")?.addEventListener("click", () => {
+      if (!climate_entity) return;
+      this._callService("climate", "turn_on", climate_entity);
+    });
   }
 
   private _callService(domain: string, service: string, entityId: string): void {
@@ -267,3 +356,4 @@ export class VolvoCarCard extends HTMLElement {
     });
   }
 }
+

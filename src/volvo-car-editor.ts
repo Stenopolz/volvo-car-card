@@ -2,10 +2,14 @@ import type { HomeAssistant, VolvoCardConfig } from "./types.js";
 
 const LABELS: Record<string, string> = {
   name: "Card name (optional)",
-  battery_entity: "Battery Level entity",
-  range_entity: "Range entity",
+  battery_entity: "Battery level entity (sensor)",
+  range_entity: "Electric range entity (sensor)",
+  fuel_entity: "Fuel level entity (sensor)",
+  fuel_range_entity: "Fuel range entity (sensor)",
   lock_entity: "Lock entity",
-  odometer_entity: "Odometer entity",
+  charging_status_entity: "Charging status entity (sensor, optional)",
+  climate_entity: "Climate entity (optional)",
+  vehicle_image_entity: "Vehicle image entity (camera/image, optional)",
 };
 
 /**
@@ -24,12 +28,28 @@ const SCHEMA = [
     selector: { entity: { filter: [{ domain: "sensor" }] } },
   },
   {
+    name: "fuel_entity",
+    selector: { entity: { filter: [{ domain: "sensor" }] } },
+  },
+  {
+    name: "fuel_range_entity",
+    selector: { entity: { filter: [{ domain: "sensor" }] } },
+  },
+  {
     name: "lock_entity",
     selector: { entity: { filter: [{ domain: "lock" }] } },
   },
   {
-    name: "odometer_entity",
+    name: "charging_status_entity",
     selector: { entity: { filter: [{ domain: "sensor" }] } },
+  },
+  {
+    name: "climate_entity",
+    selector: { entity: { filter: [{ domain: "climate" }] } },
+  },
+  {
+    name: "vehicle_image_entity",
+    selector: { entity: { filter: [{ domain: "camera" }, { domain: "image" }] } },
   },
 ];
 
