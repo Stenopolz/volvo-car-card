@@ -13,6 +13,7 @@
 5. [File-by-file Walkthrough](#5-file-by-file-walkthrough)
    - [src/types.ts](#srcTypests)
    - [src/icons/index.ts](#srciconsindexts)
+   - [src/i18n/ — translations](#srci18n--translations)
    - [src/version.ts and scripts/version.ts](#srcversionts-and-scriptsversionts)
    - [src/styles.ts](#srcstylets)
    - [src/volvo-car-card.ts](#srcvolvo-car-cardts) ← main card logic
@@ -170,10 +171,14 @@ volvo-car-card/
 │   ├── types.ts              ← Interfaces / data models
 │   ├── styles.ts             ← All CSS (as a string constant)
 │   ├── version.ts            ← Auto-generated build version stamp
-│   └── icons/
-│       ├── index.ts          ← Exports SVG strings as constants
-│       ├── bolt.svg          ← Source SVG files (not bundled directly)
-│       └── ...
+│   ├── icons/
+│   │   ├── index.ts          ← Exports SVG strings as constants
+│   │   ├── bolt.svg          ← Source SVG files (not bundled directly)
+│   │   └── ...
+│   └── i18n/
+│       ├── index.ts          ← Translations interface + language registry + getTranslations()
+│       ├── en.ts             ← English strings (default / fallback)
+│       └── sv.ts             ← Swedish strings
 ├── scripts/
 │   └── version.ts            ← Pre-build script that stamps version.ts
 ├── dist/
@@ -299,6 +304,112 @@ Each icon is an **inline SVG string**. Instead of referencing external image fil
 **Why not `<img src="icon.svg">`?** Because the card lives inside Shadow DOM with strict encapsulation. External references don't always resolve correctly. Inline SVGs also allow CSS to style them via `fill: currentColor` — the SVG inherits the text color of its container, making theming easy.
 
 The physical `.svg` files in `src/icons/` exist as human-readable references but are **not** imported directly by Bun — only `index.ts` is imported.
+
+---
+
+### `src/i18n/` — translations
+
+**Role:** Provides all user-visible strings in the correct language, selected automatically from `hass.language`.
+
+The folder contains three kinds of files:
+
+#### `src/i18n/index.ts` — the contract and registry
+
+Defines the `Translations` interface that every language file must implement:
+
+```typescript
+export interface Translations {
+  default_name: string;       // fallback vehicle name
+  version_tooltip: string;    // tooltip on the build-version badge
+  no_config: string;          // error shown when config is missing
+  updating: string;           // shown while a sensor is initialising
+  state: {
+    fully_charged: string;
+    ready_to_drive: string;
+    charge_scheduled: string;
+  };
+  btn: {
+    lock: string;
+    unlock: string;
+    climate: string;
+    engine_start: string;
+    engine_stop: string;
+  };
+}
+```
+
+This is TypeScript's equivalent of a Kotlin interface or an abstract data class — the compiler will refuse to compile any language file that is missing a field or uses the wrong type.
+
+The file also holds the **language registry** — a plain object that maps BCP-47 language subtags to translation objects:
+
+```typescript
+import { en } from "./en.js";
+import { sv } from "./sv.js";
+
+const LANGUAGES: Record<string, Translations> = { en, sv };
+```
+
+And the **lookup function**:
+
+```typescript
+export function getTranslations(lang: string): Translations {
+  const lower = lang.toLowerCase();
+  return (
+    LANGUAGES[lower] ??           // try exact match ("sv")
+    LANGUAGES[lower.split("-")[0]] ??  // try base tag ("sv" from "sv-SE")
+    en                            // fall back to English
+  );
+}
+```
+
+HA's `hass.language` can be a full locale like `"sv-SE"`. The function first tries the full lowercase string, then strips the region suffix and tries again, then falls back to English. This is analogous to Android's `Resources.getConfiguration().locales` resolution chain.
+
+#### `src/i18n/en.ts` and `src/i18n/sv.ts` — language files
+
+Each file exports a single object that satisfies the `Translations` interface:
+
+```typescript
+// en.ts
+import type { Translations } from "./index.js";
+
+export const en: Translations = {
+  default_name: "Volvo",
+  version_tooltip: "Build version",
+  no_config: "No configuration provided.",
+  updating: "Updating…",
+  state: {
+    fully_charged: "Fully charged",
+    ready_to_drive: "Ready to drive",
+    charge_scheduled: "Charge scheduled",
+  },
+  btn: {
+    lock: "Lock",
+    unlock: "Unlock",
+    climate: "Start climate",
+    engine_start: "Start engine",
+    engine_stop: "Stop engine",
+  },
+};
+```
+
+`import type` means the `Translations` import is erased at runtime — it only exists for the compiler to check that every required field is present and has the right type.
+
+#### How the card uses translations
+
+At the very start of `_render()`, before any HTML is built:
+
+```typescript
+const t = getTranslations(this._hass?.language ?? "en");
+```
+
+`t` is then passed into every sub-renderer that needs strings, and referenced directly in the main HTML template:
+
+```typescript
+<span class="version-badge" title="${t.version_tooltip}">${VERSION}</span>
+<button class="circle-btn" id="btn-lock" title="${isLocked ? t.btn.unlock : t.btn.lock}">
+```
+
+Sub-renderers that need strings accept a minimal typed subset of `t` rather than the full object, so only the strings they actually use are in their signature — a common TypeScript pattern analogous to defining a narrow Kotlin interface for a function parameter.
 
 ---
 
@@ -824,6 +935,51 @@ A quick reference for the CSS patterns in `styles.ts`.
    ```typescript
    import { ..., ICON_HORN } from "./icons/index.js";
    ```
+
+---
+
+### Add a new language translation
+
+1. Create `src/i18n/<lang>.ts` (use the BCP-47 primary subtag, e.g. `de` for German):
+
+   ```typescript
+   import type { Translations } from "./index.js";
+
+   export const de: Translations = {
+     default_name: "Volvo",
+     version_tooltip: "Build-Version",
+     no_config: "Keine Konfiguration angegeben.",
+     updating: "Wird aktualisiert…",
+     state: {
+       fully_charged: "Vollständig geladen",
+       ready_to_drive: "Fahrbereit",
+       charge_scheduled: "Laden geplant",
+     },
+     btn: {
+       lock: "Sperren",
+       unlock: "Entsperren",
+       climate: "Klimaanlage starten",
+       engine_start: "Motor starten",
+       engine_stop: "Motor stoppen",
+     },
+   };
+   ```
+
+   The TypeScript compiler will give you a compile error if any field is missing or misspelled — so you can't accidentally ship an incomplete translation.
+
+2. Register it in `src/i18n/index.ts` — two lines:
+
+   ```typescript
+   import { de } from "./de.js";          // add this import
+
+   const LANGUAGES: Record<string, Translations> = {
+     en,
+     sv,
+     de,                                  // add this entry
+   };
+   ```
+
+3. Run `bun run build`. The card now uses German strings for any HA instance configured with `language: de`.
 
 ---
 

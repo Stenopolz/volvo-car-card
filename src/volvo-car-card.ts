@@ -1,6 +1,7 @@
 import type { HomeAssistant, HassEntity, VolvoCardConfig } from "./types.js";
 import { CARD_STYLES } from "./styles.js";
 import { VERSION } from "./version.js";
+import { getTranslations } from "./i18n/index.js";
 import {
   ICON_BOLT,
   ICON_FUEL_PUMP,
@@ -97,9 +98,11 @@ export class VolvoCarCard extends HTMLElement {
   private _render(): void {
     if (!this.shadowRoot) return;
 
+    const t = getTranslations(this._hass?.language ?? "en");
+
     if (!this._config) {
       this.shadowRoot.innerHTML = `<style>${CARD_STYLES}</style>
-        <div class="card-root"><div class="error-box">No configuration provided.</div></div>`;
+        <div class="card-root"><div class="error-box">${t.no_config}</div></div>`;
       return;
     }
 
@@ -132,7 +135,7 @@ export class VolvoCarCard extends HTMLElement {
 
     const isLocked  = lockState?.state === "locked";
     const isEV      = battery_entity != null;
-    const cardName  = name ?? this._deriveName(lockState ?? batteryState ?? fuelState);
+    const cardName  = name ?? this._deriveName(lockState ?? batteryState ?? fuelState, t.default_name);
 
     // Background: EV-only → green fill (battery %); fuel range present → no background
     const energyBgStyle = fuel_range_entity
@@ -145,7 +148,7 @@ export class VolvoCarCard extends HTMLElement {
       : "";
 
     // Charging status label
-    const chargingLabel = this._chargingLabel(chargingState, batteryPct);
+    const chargingLabel = this._chargingLabel(chargingState, batteryPct, t);
 
     this.shadowRoot.innerHTML = `
       <style>${CARD_STYLES}</style>
@@ -160,11 +163,11 @@ export class VolvoCarCard extends HTMLElement {
           <!-- Header: vehicle name + version -->
           <div class="card-header">
             <span class="vehicle-name">${cardName}</span>
-            <span class="version-badge" title="Build version">${VERSION}</span>
+            <span class="version-badge" title="${t.version_tooltip}">${VERSION}</span>
           </div>
 
           <!-- Primary range metric -->
-          ${this._renderRangeMetric(rangeKm, rangeState, fuelRangeKm, fuelRangeState)}
+          ${this._renderRangeMetric(rangeKm, rangeState, fuelRangeKm, fuelRangeState, t)}
 
           <!-- Energy status rows -->
           <div class="status-block">
@@ -184,27 +187,27 @@ export class VolvoCarCard extends HTMLElement {
         <!-- Quick-action buttons -->
         <div class="actions-bar">
           ${lock_entity ? `
-            <button class="circle-btn" id="btn-lock" title="${isLocked ? "Unlock" : "Lock"}">
+            <button class="circle-btn" id="btn-lock" title="${isLocked ? t.btn.unlock : t.btn.lock}">
               ${isLocked ? ICON_LOCK : ICON_LOCK_OPEN}
             </button>
           ` : ""}
           ${lock_entity && isLocked ? `
-            <button class="circle-btn" id="btn-unlock" title="Unlock">
+            <button class="circle-btn" id="btn-unlock" title="${t.btn.unlock}">
               ${ICON_LOCK_OPEN}
             </button>
           ` : ""}
           ${climate_entity ? `
-            <button class="circle-btn" id="btn-climate" title="Start climate">
+            <button class="circle-btn" id="btn-climate" title="${t.btn.climate}">
               ${ICON_FAN}
             </button>
           ` : ""}
           ${engine_start_entity ? `
-            <button class="circle-btn" id="btn-engine-start" title="Start engine">
+            <button class="circle-btn" id="btn-engine-start" title="${t.btn.engine_start}">
               ${ICON_ENGINE_ON}
             </button>
           ` : ""}
           ${engine_stop_entity ? `
-            <button class="circle-btn" id="btn-engine-stop" title="Stop engine">
+            <button class="circle-btn" id="btn-engine-stop" title="${t.btn.engine_stop}">
               ${ICON_ENGINE_OFF}
             </button>
           ` : ""}
@@ -222,7 +225,8 @@ export class VolvoCarCard extends HTMLElement {
     rangeKm: number | null,
     rangeState: HassEntity | null,
     fuelRangeKm: number | null,
-    fuelRangeState: HassEntity | null
+    fuelRangeState: HassEntity | null,
+    t: { updating: string }
   ): string {
     const hasElectric = rangeState !== null && rangeKm !== null && !isNaN(rangeKm);
     const hasFuel     = fuelRangeState !== null && fuelRangeKm !== null && !isNaN(fuelRangeKm);
@@ -258,7 +262,7 @@ export class VolvoCarCard extends HTMLElement {
     }
     const km = hasElectric ? rangeKm! : hasFuel ? fuelRangeKm! : null;
     if (km === null) {
-      return `<div class="range-metric"><span class="range-unavailable">Updating…</span></div>`;
+      return `<div class="range-metric"><span class="range-unavailable">${t.updating}</span></div>`;
     }
     const icon = hasElectric ? ICON_BOLT : ICON_FUEL_PUMP;
     const iconClass = hasElectric ? "range-part-icon--electric" : "range-part-icon--fuel";
@@ -323,16 +327,20 @@ export class VolvoCarCard extends HTMLElement {
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
-  private _chargingLabel(state: HassEntity | null, batteryPct: number | null): string {
+  private _chargingLabel(
+    state: HassEntity | null,
+    batteryPct: number | null,
+    t: { state: { fully_charged: string; ready_to_drive: string; charge_scheduled: string } }
+  ): string {
     if (!state) {
-      if (batteryPct !== null && batteryPct >= 100) return "Fully charged";
-      return "Ready to drive";
+      if (batteryPct !== null && batteryPct >= 100) return t.state.fully_charged;
+      return t.state.ready_to_drive;
     }
     const s = state.state.toLowerCase();
     if (s.includes("charging")) return state.state;
-    if (s.includes("full"))     return "Fully charged";
-    if (s.includes("schedul"))  return "Charge scheduled";
-    return state.state || "Ready to drive";
+    if (s.includes("full"))     return t.state.fully_charged;
+    if (s.includes("schedul"))  return t.state.charge_scheduled;
+    return state.state || t.state.ready_to_drive;
   }
 
   private _getState(entityId: string | undefined): HassEntity | null {
@@ -340,13 +348,13 @@ export class VolvoCarCard extends HTMLElement {
     return this._hass.states[entityId] ?? null;
   }
 
-  private _deriveName(state: HassEntity | null): string {
-    if (!state) return "Volvo";
+  private _deriveName(state: HassEntity | null, defaultName: string): string {
+    if (!state) return defaultName;
     const friendly = (state.attributes["friendly_name"] as string | undefined) ?? "";
     return (
       friendly
         .replace(/\s+(battery.*|lock.*|odometer.*|distance.*|fuel.*|charging.*|camera.*)$/i, "")
-        .trim() || "Volvo"
+        .trim() || defaultName
     );
   }
 
