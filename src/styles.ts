@@ -69,6 +69,76 @@ export const CARD_STYLES = `
     line-height: 1;
   }
 
+  .range-metric--combined {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .range-combined-total {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .range-breakdown {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+  }
+
+  .range-part {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #444;
+  }
+
+  .range-part-unit {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 400;
+  }
+
+  .range-sep {
+    font-size: 0.85rem;
+    color: #999;
+    font-weight: 300;
+  }
+
+  .range-part-icon {
+    width: 14px;
+    height: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .range-part-icon svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+  }
+
+  .range-part-icon--fuel    { color: #3b82f6; }
+  .range-part-icon--electric { color: #22c55e; }
+
+  .range-single-icon {
+    width: 18px;
+    height: 18px;
+    align-self: center;
+    margin-left: 2px;
+  }
+
+  .range-single-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
   .range-value {
     font-size: 5rem;
     font-weight: 300;
@@ -104,6 +174,11 @@ export const CARD_STYLES = `
     gap: 10px;
   }
 
+  .status-row--fuel {
+    display: inline-flex;
+    grid-template-columns: unset;
+  }
+
   .status-icon {
     width: 22px;
     height: 22px;
@@ -125,7 +200,6 @@ export const CARD_STYLES = `
     font-weight: 600;
     color: #111;
     white-space: nowrap;
-    text-align: right;
   }
 
   .status-pct.secondary {

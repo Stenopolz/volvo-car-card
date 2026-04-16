@@ -37,7 +37,7 @@ export interface VolvoCardConfig {
   lock_entity?: string;
   /** Entity ID of the odometer sensor, e.g. sensor.xc40_odometer */
   odometer_entity?: string;
-  /** Entity ID of the fuel level sensor (0-100 %), e.g. sensor.xc40_fuel_amount */
+  /** Entity ID of the fuel level sensor (in liters), e.g. sensor.xc40_fuel_amount */
   fuel_entity?: string;
   /** Entity ID of the fuel range sensor, e.g. sensor.xc40_distance_to_empty_tank */
   fuel_range_entity?: string;

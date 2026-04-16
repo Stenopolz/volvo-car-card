@@ -126,13 +126,14 @@ export class VolvoCarCard extends HTMLElement {
     const fuelPct      = fuelState     ? parseFloat(fuelState.state)     : null;
     const fuelRangeKm  = fuelRangeState ? parseFloat(fuelRangeState.state) : null;
 
-    const isLocked    = lockState?.state === "locked";
-    const isEV        = battery_entity != null;
-    const cardName    = name ?? this._deriveName(lockState ?? batteryState ?? fuelState);
+    const isLocked  = lockState?.state === "locked";
+    const isEV      = battery_entity != null;
+    const cardName  = name ?? this._deriveName(lockState ?? batteryState ?? fuelState);
 
-    // Energy background: use battery % for EV/hybrid, fuel % for ICE-only
-    const energyPct     = isEV ? (batteryPct ?? 0) : (fuelPct ?? 0);
-    const energyBgStyle = this._energyBgStyle(energyPct, isEV);
+    // Background: EV-only → green fill (battery %); fuel range present → no background
+    const energyBgStyle = fuel_range_entity
+      ? ""
+      : this._energyBgStyle(batteryPct ?? 0);
 
     // Vehicle image URL from entity_picture attribute
     const imageUrl = imageState
@@ -159,12 +160,12 @@ export class VolvoCarCard extends HTMLElement {
           </div>
 
           <!-- Primary range metric -->
-          ${this._renderRangeMetric(rangeKm, rangeState)}
+          ${this._renderRangeMetric(rangeKm, rangeState, fuelRangeKm, fuelRangeState)}
 
           <!-- Energy status rows -->
           <div class="status-block">
             ${isEV ? this._renderChargeRow(batteryPct, chargingLabel) : ""}
-            ${this._renderFuelRow(fuelPct, fuelRangeKm, isEV)}
+            ${this._renderFuelRow(fuelPct, fuelState)}
           </div>
 
         </div>
@@ -203,17 +204,55 @@ export class VolvoCarCard extends HTMLElement {
 
   // ── Sub-renderers ────────────────────────────────────────────────────────
 
-  private _renderRangeMetric(rangeKm: number | null, rangeState: HassEntity | null): string {
-    if (!rangeState) {
+  private _renderRangeMetric(
+    rangeKm: number | null,
+    rangeState: HassEntity | null,
+    fuelRangeKm: number | null,
+    fuelRangeState: HassEntity | null
+  ): string {
+    const hasElectric = rangeState !== null && rangeKm !== null && !isNaN(rangeKm);
+    const hasFuel     = fuelRangeState !== null && fuelRangeKm !== null && !isNaN(fuelRangeKm);
+
+    // Both ranges available → combined "440 + 40 km" layout (fuel first)
+    if (hasElectric && hasFuel) {
+      const total = Math.round(fuelRangeKm!) + Math.round(rangeKm!);
+      return `
+        <div class="range-metric range-metric--combined">
+          <div class="range-combined-total">
+            <span class="range-value">${total.toLocaleString()}</span>
+            <span class="range-unit">km</span>
+          </div>
+          <div class="range-breakdown">
+            <span class="range-part">
+              <span class="range-part-icon range-part-icon--fuel">${ICON_FUEL_PUMP}</span>
+              ${Math.round(fuelRangeKm!)}
+            </span>
+            <span class="range-sep">+</span>
+            <span class="range-part">
+              <span class="range-part-icon range-part-icon--electric">${ICON_BOLT}</span>
+              ${Math.round(rangeKm!)}
+            </span>
+            <span class="range-part-unit">km</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // Single range
+    if (!rangeState && !fuelRangeState) {
       return `<div class="range-metric"><span class="range-unavailable">— km</span></div>`;
     }
-    if (rangeKm === null || isNaN(rangeKm)) {
+    const km = hasElectric ? rangeKm! : hasFuel ? fuelRangeKm! : null;
+    if (km === null) {
       return `<div class="range-metric"><span class="range-unavailable">Updating…</span></div>`;
     }
+    const icon = hasElectric ? ICON_BOLT : ICON_FUEL_PUMP;
+    const iconClass = hasElectric ? "range-part-icon--electric" : "range-part-icon--fuel";
     return `
       <div class="range-metric">
-        <span class="range-value">${Math.round(rangeKm).toLocaleString()}</span>
+        <span class="range-value">${Math.round(km).toLocaleString()}</span>
         <span class="range-unit">km</span>
+        <span class="range-part-icon ${iconClass} range-single-icon">${icon}</span>
       </div>
     `;
   }
@@ -230,21 +269,18 @@ export class VolvoCarCard extends HTMLElement {
     `;
   }
 
-  private _renderFuelRow(pct: number | null, rangeKm: number | null, isEV: boolean): string {
-    // Omit the row entirely for EV-only vehicles with no fuel data
-    if (pct === null && !this._config?.fuel_entity) return "";
+  private _renderFuelRow(liters: number | null, fuelState: HassEntity | null): string {
+    if (!this._config?.fuel_entity) return "";
 
-    const display = pct !== null ? `${Math.round(pct)}%` : "—";
-    const rangeLabel = rangeKm !== null && !isNaN(rangeKm)
-      ? `${Math.round(rangeKm)} km`
+    const unit = (fuelState?.attributes["unit_of_measurement"] as string | undefined) ?? "L";
+    const display = liters !== null && !isNaN(liters)
+      ? `${Math.round(liters)} ${unit}`
       : "—";
 
     return `
-      <div class="status-row">
+      <div class="status-row status-row--fuel">
         <span class="status-icon">${ICON_FUEL_PUMP}</span>
-        <span class="status-pct secondary">${display}</span>
-        ${this._renderSegBar(pct, "blue")}
-        <span class="status-label secondary">${rangeLabel}</span>
+        <span class="status-pct">${display}</span>
       </div>
     `;
   }
@@ -259,25 +295,16 @@ export class VolvoCarCard extends HTMLElement {
 
   // ── Energy background ────────────────────────────────────────────────────
 
-  private _energyBgStyle(pct: number, isEV: boolean): string {
-    const pctStr = `${Math.max(0, Math.min(100, pct))}%`;
-    const fadeStart = `${Math.max(0, pct - 18)}%`;
-
-    if (isEV) {
-      // Green diffusion – mint / soft lime
-      return `background: linear-gradient(to right,
-        rgba(134,239,172,0.30) 0%,
-        rgba(74,222,128,0.22) ${fadeStart},
-        rgba(74,222,128,0.04) ${pctStr},
-        transparent 100%);`;
-    } else {
-      // Blue diffusion – pale azure / icy blue
-      return `background: linear-gradient(to right,
-        rgba(147,197,253,0.30) 0%,
-        rgba(59,130,246,0.20) ${fadeStart},
-        rgba(59,130,246,0.04) ${pctStr},
-        transparent 100%);`;
-    }
+  private _energyBgStyle(batteryPct: number): string {
+    const pct = Math.max(0, Math.min(100, batteryPct));
+    const edgeStart = `${Math.max(0, pct - 6)}%`;
+    const edgeEnd   = `${pct}%`;
+    // Sharper green edge: full opacity up to near the cutoff, quick fade at the edge
+    return `background: linear-gradient(to right,
+      rgba(74,222,128,0.28) 0%,
+      rgba(74,222,128,0.28) ${edgeStart},
+      rgba(74,222,128,0.06) ${edgeEnd},
+      transparent 100%);`;
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────
