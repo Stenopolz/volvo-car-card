@@ -3,12 +3,16 @@ export const CARD_STYLES = `
     display: block;
     box-sizing: border-box;
     width: 100%;
+    height: 100%;
   }
 
   /* ── Card root ── */
   .card-root {
     position: relative;
     width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     background: var(--ha-card-background, #f4f4f3);
     border-radius: var(--ha-card-border-radius, 24px);
     box-shadow: var(--ha-card-box-shadow, 0 4px 20px rgba(0,0,0,.08));
@@ -33,6 +37,7 @@ export const CARD_STYLES = `
     position: relative;
     z-index: 1;
     padding: 24px 24px 0;
+    flex-shrink: 0;
   }
 
   /* ── Header ── */
@@ -243,25 +248,27 @@ export const CARD_STYLES = `
   .hero-zone {
     position: relative;
     z-index: 1;
+    flex: 1;
+    min-height: 0;
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    padding: 16px 0 0;
-    min-height: 160px;
+    padding: 8px 0 0;
+    overflow: hidden;
   }
 
   .car-image {
-    max-width: 100%;
-    max-height: 210px;
     width: 100%;
+    height: 100%;
     object-fit: contain;
+    object-position: center bottom;
     display: block;
     filter: drop-shadow(0 8px 24px rgba(0,0,0,0.12));
   }
 
   .hero-placeholder {
     width: 100%;
-    height: 160px;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -281,6 +288,7 @@ export const CARD_STYLES = `
     justify-content: center;
     gap: 20px;
     padding: 20px 24px 24px;
+    flex-shrink: 0;
   }
 
   .circle-btn {
