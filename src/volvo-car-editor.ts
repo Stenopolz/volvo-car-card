@@ -9,6 +9,8 @@ const LABELS: Record<string, string> = {
   lock_entity: "Lock entity",
   charging_status_entity: "Charging status entity (sensor, optional)",
   climate_entity: "Start climate entity (button, optional)",
+  engine_start_entity: "Engine start entity (button)",
+  engine_stop_entity: "Engine stop entity (button)",
   vehicle_image_entity: "Vehicle image entity (camera/image, optional)",
 };
 
@@ -45,6 +47,14 @@ const SCHEMA = [
   },
   {
     name: "climate_entity",
+    selector: { entity: { filter: [{ domain: "climate" }, { domain: "button" }] } },
+  },
+  {
+    name: "engine_start_entity",
+    selector: { entity: { filter: [{ domain: "button" }] } },
+  },
+  {
+    name: "engine_stop_entity",
     selector: { entity: { filter: [{ domain: "button" }] } },
   },
   {

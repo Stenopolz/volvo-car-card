@@ -43,8 +43,12 @@ export interface VolvoCardConfig {
   fuel_range_entity?: string;
   /** Entity ID of a sensor whose state describes the charging status, e.g. sensor.xc40_charging_system_status */
   charging_status_entity?: string;
-  /** Entity ID of a climate entity for remote climate control */
+  /** Entity ID of a climate or button entity for remote climate control */
   climate_entity?: string;
+  /** Entity ID of a button entity to start the engine */
+  engine_start_entity?: string;
+  /** Entity ID of a button entity to stop the engine */
+  engine_stop_entity?: string;
   /** Entity ID of a camera or image entity whose entity_picture provides the vehicle image */
   vehicle_image_entity?: string;
 }

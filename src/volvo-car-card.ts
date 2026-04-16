@@ -7,6 +7,8 @@ import {
   ICON_LOCK,
   ICON_LOCK_OPEN,
   ICON_FAN,
+  ICON_ENGINE_ON,
+  ICON_ENGINE_OFF,
 } from "./icons/index.js";
 
 /** Placeholder car silhouette shown when no vehicle_image_entity is configured. */
@@ -109,6 +111,8 @@ export class VolvoCarCard extends HTMLElement {
       fuel_range_entity,
       charging_status_entity,
       climate_entity,
+      engine_start_entity,
+      engine_stop_entity,
       vehicle_image_entity,
       name,
     } = this._config;
@@ -194,12 +198,22 @@ export class VolvoCarCard extends HTMLElement {
               ${ICON_FAN}
             </button>
           ` : ""}
+          ${engine_start_entity ? `
+            <button class="circle-btn" id="btn-engine-start" title="Start engine">
+              ${ICON_ENGINE_ON}
+            </button>
+          ` : ""}
+          ${engine_stop_entity ? `
+            <button class="circle-btn" id="btn-engine-stop" title="Stop engine">
+              ${ICON_ENGINE_OFF}
+            </button>
+          ` : ""}
         </div>
 
       </div>
     `;
 
-    this._attachHandlers(lock_entity, isLocked, climate_entity);
+    this._attachHandlers(lock_entity, isLocked, climate_entity, engine_start_entity, engine_stop_entity);
   }
 
   // ── Sub-renderers ────────────────────────────────────────────────────────
@@ -346,6 +360,8 @@ export class VolvoCarCard extends HTMLElement {
       this._config.fuel_range_entity,
       this._config.charging_status_entity,
       this._config.climate_entity,
+      this._config.engine_start_entity,
+      this._config.engine_stop_entity,
       this._config.vehicle_image_entity,
     ].filter(Boolean) as string[];
 
@@ -355,7 +371,9 @@ export class VolvoCarCard extends HTMLElement {
   private _attachHandlers(
     lock_entity: string | undefined,
     isLocked: boolean,
-    climate_entity: string | undefined
+    climate_entity: string | undefined,
+    engine_start_entity: string | undefined,
+    engine_stop_entity: string | undefined
   ): void {
     const root = this.shadowRoot!;
 
@@ -375,6 +393,16 @@ export class VolvoCarCard extends HTMLElement {
       const domain = climate_entity.split(".")[0];
       const service = domain === "button" ? "press" : "turn_on";
       this._callService(domain, service, climate_entity);
+    });
+
+    root.getElementById("btn-engine-start")?.addEventListener("click", () => {
+      if (!engine_start_entity) return;
+      this._callService("button", "press", engine_start_entity);
+    });
+
+    root.getElementById("btn-engine-stop")?.addEventListener("click", () => {
+      if (!engine_stop_entity) return;
+      this._callService("button", "press", engine_stop_entity);
     });
   }
 
