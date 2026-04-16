@@ -2,7 +2,7 @@
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 [![ha_version](https://img.shields.io/badge/homeassistant-2024.1.0%2B-yellow.svg)](https://www.home-assistant.io)
-[![version](https://img.shields.io/badge/version-0.1.0-green.svg)](#)
+[![version](https://img.shields.io/badge/version-0.1.1-green.svg)](#)
 [![maintained](https://img.shields.io/maintenance/yes/2026.svg)](#)
 
 A custom [Home Assistant](https://www.home-assistant.io/) Lovelace card for displaying and controlling your Volvo vehicle through the [Volvo Cars integration](https://www.home-assistant.io/integrations/volvo/).
