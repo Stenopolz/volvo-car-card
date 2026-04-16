@@ -22,4 +22,17 @@ export const sv: Translations = {
     engine_start: "Starta motor",
     engine_stop: "Stäng av motor",
   },
+  editor: {
+    name: "Kortnamn",
+    battery_entity: "Batterinivåenhet",
+    battery_range_entity: "Batteriräckviddsenhet",
+    fuel_entity: "Bränslenivåenhet",
+    fuel_range_entity: "Bränsleräckviddsenhet",
+    lock_entity: "Låsenhet",
+    charging_status_entity: "Laddningsstatusenhet",
+    climate_entity: "Klimatiseringsenhet",
+    engine_start_entity: "Motorstartsenhet",
+    engine_stop_entity: "Motorstopenhet",
+    vehicle_image_entity: "Fordonsbild",
+  },
 };

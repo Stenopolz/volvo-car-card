@@ -46,6 +46,19 @@ export interface Translations {
     engine_start: string;
     engine_stop: string;
   };
+  editor: {
+    name: string;
+    battery_entity: string;
+    battery_range_entity: string;
+    fuel_entity: string;
+    fuel_range_entity: string;
+    lock_entity: string;
+    charging_status_entity: string;
+    climate_entity: string;
+    engine_start_entity: string;
+    engine_stop_entity: string;
+    vehicle_image_entity: string;
+  };
 }
 
 /**

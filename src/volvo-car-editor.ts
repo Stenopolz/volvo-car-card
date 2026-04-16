@@ -1,18 +1,5 @@
+import { getTranslations } from "./i18n/index.js";
 import type { HomeAssistant, VolvoCardConfig } from "./types.js";
-
-const LABELS: Record<string, string> = {
-  name: "Card name",
-  battery_entity: "Battery level entity",
-  battery_range_entity: "Battery range entity",
-  fuel_entity: "Fuel level entity",
-  fuel_range_entity: "Fuel range entity",
-  lock_entity: "Lock entity",
-  charging_status_entity: "Charging status entity",
-  climate_entity: "Start climate entity",
-  engine_start_entity: "Engine start entity",
-  engine_stop_entity: "Engine stop entity",
-  vehicle_image_entity: "Vehicle image entity",
-};
 
 /**
  * Schema consumed by <ha-form>.
@@ -76,12 +63,20 @@ export class VolvoCarEditor extends HTMLElement {
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
-    if (this._form) this._form["hass"] = hass;
+    if (this._form) {
+      this._form["hass"] = hass;
+      this._form["computeLabel"] = this._makeComputeLabel();
+    }
   }
 
   setConfig(config: VolvoCardConfig): void {
     this._config = { ...config };
     if (this._form) this._form["data"] = this._config;
+  }
+
+  private _makeComputeLabel(): (item: { name: string }) => string {
+    const labels = getTranslations(this._hass?.language ?? "en").editor;
+    return (item) => (labels as Record<string, string>)[item.name] ?? item.name;
   }
 
   connectedCallback(): void {
@@ -102,8 +97,7 @@ export class VolvoCarEditor extends HTMLElement {
     form["hass"] = this._hass;
     form["data"] = this._config;
     form["schema"] = SCHEMA;
-    form["computeLabel"] = (item: { name: string }) =>
-      LABELS[item.name] ?? item.name;
+    form["computeLabel"] = this._makeComputeLabel();
 
     form.addEventListener("value-changed", (e: Event) => {
       const newConfig: VolvoCardConfig = {
