@@ -1,5 +1,6 @@
 import type { HomeAssistant, HassEntity, VolvoCardConfig } from "./types.js";
 import { CARD_STYLES } from "./styles.js";
+import { VERSION } from "./version.js";
 
 /** SVG icons used within the card */
 const ICONS = {
@@ -147,6 +148,7 @@ export class VolvoCarCard extends HTMLElement {
             <span class="card-title">${cardName}</span>
             <span class="card-subtitle">Volvo</span>
           </div>
+          <span class="version-badge" title="Build version">${VERSION}</span>
         </div>
 
         <!-- Stats grid -->

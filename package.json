@@ -4,9 +4,9 @@
   "description": "Custom Home Assistant card for the Volvo Cars integration",
   "private": true,
   "scripts": {
-    "build": "bun build src/index.ts --outfile dist/volvo-car-card.js --target browser --minify",
-    "build:dev": "bun build src/index.ts --outfile dist/volvo-car-card.js --target browser --sourcemap=external",
-    "watch": "bun build src/index.ts --outfile dist/volvo-car-card.js --target browser --sourcemap=external --watch"
+    "build": "bun scripts/version.ts && bun build src/index.ts --outfile dist/volvo-car-card.js --target browser --minify",
+    "build:dev": "bun scripts/version.ts && bun build src/index.ts --outfile dist/volvo-car-card.js --target browser --sourcemap=external",
+    "watch": "bun scripts/version.ts && bun build src/index.ts --outfile dist/volvo-car-card.js --target browser --sourcemap=external --watch"
   },
   "devDependencies": {
     "typescript": "^5.4.0"

@@ -141,6 +141,19 @@ export const CARD_STYLES = `
     fill: currentColor;
   }
 
+  /* ── Version badge ── */
+  .version-badge {
+    margin-left: auto;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--secondary-background-color, rgba(0,0,0,.07));
+    color: var(--secondary-text-color);
+    font-family: monospace;
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+
   /* ── Error / unavailable ── */
   .error-box {
     padding: 12px;

@@ -1,4 +1,4 @@
-var l=`
+var n=`
   :host {
     display: block;
     box-sizing: border-box;
@@ -141,6 +141,19 @@ var l=`
     fill: currentColor;
   }
 
+  /* ── Version badge ── */
+  .version-badge {
+    margin-left: auto;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--secondary-background-color, rgba(0,0,0,.07));
+    color: var(--secondary-text-color);
+    font-family: monospace;
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+
   /* ── Error / unavailable ── */
   .error-box {
     padding: 12px;
@@ -153,7 +166,7 @@ var l=`
   .unavailable {
     color: var(--disabled-text-color, rgba(0,0,0,.38));
   }
-`;var p={car:`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+`;var t="41b967a (2026-04-13)";var p={car:`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
   </svg>`,battery:`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/>
@@ -165,31 +178,32 @@ var l=`
     <path d="M13.49 5.48c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/>
   </svg>`,odometer:`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/>
-  </svg>`};class n extends HTMLElement{_config=null;_hass=null;_initialized=!1;setConfig(r){if(!r)throw Error("Invalid configuration");if(this._config={...r},this._initialized)this._render()}set hass(r){let o=this._hass;if(this._hass=r,this._initialized&&this._config&&this._statesChanged(o,r))this._render()}getCardSize(){return 4}getGridOptions(){return{rows:4,columns:6,min_rows:3}}static getConfigElement(){return document.createElement("volvo-car-editor")}static getStubConfig(r){let o=(x,a)=>r?Object.keys(r.states).find((b)=>b.startsWith(`${x}.`)&&b.endsWith(`_${a}`))??"":"";return{type:"custom:volvo-car-card",battery_entity:o("sensor","battery_charge_level"),range_entity:o("sensor","distance_to_empty_battery")||o("sensor","distance_to_empty_tank"),lock_entity:o("lock","lock"),odometer_entity:o("sensor","odometer")}}connectedCallback(){if(!this._initialized)this.attachShadow({mode:"open"}),this._initialized=!0;this._render()}disconnectedCallback(){}_render(){if(!this.shadowRoot)return;if(!this._config){this.shadowRoot.innerHTML=`<style>${l}</style>
-        <div class="card-root"><div class="error-box">No configuration provided.</div></div>`;return}let{battery_entity:r,range_entity:o,lock_entity:x,odometer_entity:a,name:b}=this._config,c=this._getState(r),i=this._getState(o),g=this._getState(x),f=this._getState(a),h=g?.state==="locked",d=c?parseFloat(c.state):null,s=i?parseFloat(i.state):null,z=f?parseFloat(f.state):null,w=b??this._deriveName(g??c),y=d!==null&&d<20;this.shadowRoot.innerHTML=`
-      <style>${l}</style>
+  </svg>`};class l extends HTMLElement{_config=null;_hass=null;_initialized=!1;setConfig(r){if(!r)throw Error("Invalid configuration");if(this._config={...r},this._initialized)this._render()}set hass(r){let o=this._hass;if(this._hass=r,this._initialized&&this._config&&this._statesChanged(o,r))this._render()}getCardSize(){return 4}getGridOptions(){return{rows:4,columns:6,min_rows:3}}static getConfigElement(){return document.createElement("volvo-car-editor")}static getStubConfig(r){let o=(a,x)=>r?Object.keys(r.states).find((b)=>b.startsWith(`${a}.`)&&b.endsWith(`_${x}`))??"":"";return{type:"custom:volvo-car-card",battery_entity:o("sensor","battery_charge_level"),range_entity:o("sensor","distance_to_empty_battery")||o("sensor","distance_to_empty_tank"),lock_entity:o("lock","lock"),odometer_entity:o("sensor","odometer")}}connectedCallback(){if(!this._initialized)this.attachShadow({mode:"open"}),this._initialized=!0;this._render()}disconnectedCallback(){}_render(){if(!this.shadowRoot)return;if(!this._config){this.shadowRoot.innerHTML=`<style>${n}</style>
+        <div class="card-root"><div class="error-box">No configuration provided.</div></div>`;return}let{battery_entity:r,range_entity:o,lock_entity:a,odometer_entity:x,name:b}=this._config,c=this._getState(r),i=this._getState(o),d=this._getState(a),f=this._getState(x),w=d?.state==="locked",g=c?parseFloat(c.state):null,z=i?parseFloat(i.state):null,s=f?parseFloat(f.state):null,h=b??this._deriveName(d??c),y=g!==null&&g<20;this.shadowRoot.innerHTML=`
+      <style>${n}</style>
       <div class="card-root">
 
         <!-- Header -->
         <div class="card-header">
           ${p.car}
           <div class="card-header-text">
-            <span class="card-title">${w}</span>
+            <span class="card-title">${h}</span>
             <span class="card-subtitle">Volvo</span>
           </div>
+          <span class="version-badge" title="Build version">${t}</span>
         </div>
 
         <!-- Stats grid -->
         <div class="stats-grid">
-          ${this._renderBatteryStat(d,y)}
-          ${this._renderSimpleStat("Range",s,"km",p.range)}
-          ${this._renderSimpleStat("Odometer",z?Math.round(z):null,"km",p.odometer)}
-          ${this._renderLockStat(h,!!g)}
+          ${this._renderBatteryStat(g,y)}
+          ${this._renderSimpleStat("Range",z,"km",p.range)}
+          ${this._renderSimpleStat("Odometer",s?Math.round(s):null,"km",p.odometer)}
+          ${this._renderLockStat(w,!!d)}
         </div>
 
         <!-- Actions -->
         <div class="actions">
-          ${x?`
+          ${a?`
             <button class="action-btn" id="btn-lock" title="Lock">
               ${p.lock} Lock
             </button>
@@ -200,31 +214,31 @@ var l=`
         </div>
 
       </div>
-    `,this.shadowRoot.getElementById("btn-lock")?.addEventListener("click",()=>this._callService("lock","lock",x)),this.shadowRoot.getElementById("btn-unlock")?.addEventListener("click",()=>this._callService("lock","unlock",x))}_renderBatteryStat(r,o){let x=r!==null?`${Math.round(r)}`:"—",a=r!==null?Math.round(r):0;return`
+    `,this.shadowRoot.getElementById("btn-lock")?.addEventListener("click",()=>this._callService("lock","lock",a)),this.shadowRoot.getElementById("btn-unlock")?.addEventListener("click",()=>this._callService("lock","unlock",a))}_renderBatteryStat(r,o){let a=r!==null?`${Math.round(r)}`:"—",x=r!==null?Math.round(r):0;return`
       <div class="stat-card">
         <span class="stat-label">Battery</span>
         <span class="stat-value ${r===null?"unavailable":""}">
-          ${x}<span class="stat-unit"> %</span>
+          ${a}<span class="stat-unit"> %</span>
         </span>
         <div class="battery-bar-wrap">
-          <div class="battery-bar ${o?"low":""}" style="width:${a}%"></div>
+          <div class="battery-bar ${o?"low":""}" style="width:${x}%"></div>
         </div>
       </div>
-    `}_renderSimpleStat(r,o,x,a){let b=o!==null?`${o.toLocaleString()}`:"—";return`
+    `}_renderSimpleStat(r,o,a,x){let b=o!==null?`${o.toLocaleString()}`:"—";return`
       <div class="stat-card">
         <span class="stat-label">${r}</span>
         <span class="stat-value ${o===null?"unavailable":""}">
-          ${b}<span class="stat-unit"> ${x}</span>
+          ${b}<span class="stat-unit"> ${a}</span>
         </span>
       </div>
-    `}_renderLockStat(r,o){let x=o?r?"Locked":"Unlocked":"—",a=r?p.lock:p.unlock;return`
+    `}_renderLockStat(r,o){let a=o?r?"Locked":"Unlocked":"—",x=r?p.lock:p.unlock;return`
       <div class="stat-card">
         <span class="stat-label">Lock</span>
         <span class="stat-value ${!o?"unavailable":""}" style="display:flex;align-items:center;gap:6px;font-size:1rem;">
-          ${o?a:""}
-          ${x}
+          ${o?x:""}
+          ${a}
         </span>
       </div>
-    `}_getState(r){if(!r||!this._hass)return null;return this._hass.states[r]??null}_deriveName(r){if(!r)return"Volvo";return(r.attributes.friendly_name??"").replace(/\s+(battery.*|lock.*|odometer.*|distance.*)$/i,"").trim()||"Volvo"}_statesChanged(r,o){if(!r||!this._config)return!0;return[this._config.battery_entity,this._config.range_entity,this._config.lock_entity,this._config.odometer_entity].filter(Boolean).some((a)=>r.states[a]!==o.states[a])}_callService(r,o,x){if(!this._hass)return;this._hass.callService(r,o,{entity_id:x}).catch((a)=>{console.error(`[volvo-car-card] Service call ${r}.${o} failed:`,a)})}}var v={name:"Card name (optional)",battery_entity:"Battery Level entity",range_entity:"Range entity",lock_entity:"Lock entity",odometer_entity:"Odometer entity"},k=[{name:"name",selector:{text:{}}},{name:"battery_entity",selector:{entity:{filter:[{domain:"sensor"}]}}},{name:"range_entity",selector:{entity:{filter:[{domain:"sensor"}]}}},{name:"lock_entity",selector:{entity:{filter:[{domain:"lock"}]}}},{name:"odometer_entity",selector:{entity:{filter:[{domain:"sensor"}]}}}];class u extends HTMLElement{_config={type:"custom:volvo-car-card"};_hass;_built=!1;_form;set hass(r){if(this._hass=r,this._form)this._form.hass=r}setConfig(r){if(this._config={...r},this._form)this._form.data=this._config}connectedCallback(){if(this._built)return;this._built=!0,this.attachShadow({mode:"open"});let r=this.shadowRoot;r.innerHTML=`<style>
+    `}_getState(r){if(!r||!this._hass)return null;return this._hass.states[r]??null}_deriveName(r){if(!r)return"Volvo";return(r.attributes.friendly_name??"").replace(/\s+(battery.*|lock.*|odometer.*|distance.*)$/i,"").trim()||"Volvo"}_statesChanged(r,o){if(!r||!this._config)return!0;return[this._config.battery_entity,this._config.range_entity,this._config.lock_entity,this._config.odometer_entity].filter(Boolean).some((x)=>r.states[x]!==o.states[x])}_callService(r,o,a){if(!this._hass)return;this._hass.callService(r,o,{entity_id:a}).catch((x)=>{console.error(`[volvo-car-card] Service call ${r}.${o} failed:`,x)})}}var e={name:"Card name (optional)",battery_entity:"Battery Level entity",range_entity:"Range entity",lock_entity:"Lock entity",odometer_entity:"Odometer entity"},v=[{name:"name",selector:{text:{}}},{name:"battery_entity",selector:{entity:{filter:[{domain:"sensor"}]}}},{name:"range_entity",selector:{entity:{filter:[{domain:"sensor"}]}}},{name:"lock_entity",selector:{entity:{filter:[{domain:"lock"}]}}},{name:"odometer_entity",selector:{entity:{filter:[{domain:"sensor"}]}}}];class u extends HTMLElement{_config={type:"custom:volvo-car-card"};_hass;_built=!1;_form;set hass(r){if(this._hass=r,this._form)this._form.hass=r}setConfig(r){if(this._config={...r},this._form)this._form.data=this._config}connectedCallback(){if(this._built)return;this._built=!0,this.attachShadow({mode:"open"});let r=this.shadowRoot;r.innerHTML=`<style>
       ha-form { display: block; }
-    </style>`;let o=document.createElement("ha-form");this._form=o,o.hass=this._hass,o.data=this._config,o.schema=k,o.computeLabel=(x)=>v[x.name]??x.name,o.addEventListener("value-changed",(x)=>{let a={...x.detail.value,type:"custom:volvo-car-card"};this._config=a,this.dispatchEvent(new CustomEvent("config-changed",{detail:{config:a},bubbles:!0,composed:!0}))}),r.appendChild(o)}}customElements.define("volvo-car-card",n);customElements.define("volvo-car-editor",u);window.customCards??=[];window.customCards.push({type:"volvo-car-card",name:"Volvo Car Card",description:"A card for displaying Volvo Cars integration data and controls.",preview:!1,documentationURL:"https://github.com/home-assistant/core/tree/dev/homeassistant/components/volvo"});
+    </style>`;let o=document.createElement("ha-form");this._form=o,o.hass=this._hass,o.data=this._config,o.schema=v,o.computeLabel=(a)=>e[a.name]??a.name,o.addEventListener("value-changed",(a)=>{let x={...a.detail.value,type:"custom:volvo-car-card"};this._config=x,this.dispatchEvent(new CustomEvent("config-changed",{detail:{config:x},bubbles:!0,composed:!0}))}),r.appendChild(o)}}customElements.define("volvo-car-card",l);customElements.define("volvo-car-editor",u);window.customCards??=[];window.customCards.push({type:"volvo-car-card",name:"Volvo Car Card",description:"A card for displaying Volvo Cars integration data and controls.",preview:!1,documentationURL:"https://github.com/home-assistant/core/tree/dev/homeassistant/components/volvo"});
