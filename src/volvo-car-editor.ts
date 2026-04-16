@@ -8,7 +8,7 @@ const LABELS: Record<string, string> = {
   fuel_range_entity: "Fuel range entity (sensor)",
   lock_entity: "Lock entity",
   charging_status_entity: "Charging status entity (sensor, optional)",
-  climate_entity: "Climate entity (optional)",
+  climate_entity: "Start climate entity (button, optional)",
   vehicle_image_entity: "Vehicle image entity (camera/image, optional)",
 };
 
@@ -45,7 +45,7 @@ const SCHEMA = [
   },
   {
     name: "climate_entity",
-    selector: { entity: { filter: [{ domain: "climate" }] } },
+    selector: { entity: { filter: [{ domain: "button" }] } },
   },
   {
     name: "vehicle_image_entity",

@@ -345,7 +345,9 @@ export class VolvoCarCard extends HTMLElement {
 
     root.getElementById("btn-climate")?.addEventListener("click", () => {
       if (!climate_entity) return;
-      this._callService("climate", "turn_on", climate_entity);
+      const domain = climate_entity.split(".")[0];
+      const service = domain === "button" ? "press" : "turn_on";
+      this._callService(domain, service, climate_entity);
     });
   }
 
