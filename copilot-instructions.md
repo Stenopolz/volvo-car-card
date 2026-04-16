@@ -105,15 +105,3 @@ bun run watch
 ```
 
 Copy `dist/volvo-car-card.js` to your HA `<config>/www/` folder, then add a resource and use `type: custom:volvo-car-card` in your dashboard YAML.
-
----
-
-## Iteration Roadmap
-
-| Iteration | Focus |
-|-----------|-------|
-| 1 ✅ | Project setup, card skeleton, entity picker config editor, lock/unlock actions |
-| 2 | Design polish: car silhouette image, door status indicators, charging animation |
-| 3 | Extended actions: climatization, honk/flash, engine start/stop |
-| 4 | Location/map panel, service warning badges |
-| 5 | Multi-vehicle support (device picker auto-discovery) |
