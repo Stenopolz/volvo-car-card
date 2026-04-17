@@ -54,7 +54,11 @@ There are two ways to provide a vehicle image.
 4. Perform the action and copy the image URL from the response.
 5. Paste it into the **Vehicle image URL** field in the card editor.
 
-### Option B — Image helper entity (updates automatically)
+### Option B — Image helper entity
+
+> [!IMPORTANT]
+> Volvo image backend may recognize your home assistant instance as a bot and prevent from loading images this way
+> I have no idea how to fix this
 
 1. Follow steps 1–4 above to get the image URL.
 2. Go to **Settings → Devices & Services → Helpers → Create helper → Template → Image**.
