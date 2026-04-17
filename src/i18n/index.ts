@@ -58,6 +58,7 @@ export interface Translations {
     engine_start_entity: string;
     engine_stop_entity: string;
     vehicle_image_entity: string;
+    vehicle_image_url: string;
   };
 }
 

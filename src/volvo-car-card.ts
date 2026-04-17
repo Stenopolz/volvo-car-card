@@ -118,6 +118,7 @@ export class VolvoCarCard extends HTMLElement {
       engine_start_entity,
       engine_stop_entity,
       vehicle_image_entity,
+      vehicle_image_url,
       name,
     } = this._config;
 
@@ -143,10 +144,10 @@ export class VolvoCarCard extends HTMLElement {
       ? ""
       : this._energyBgStyle(batteryPct ?? 0);
 
-    // Vehicle image URL from entity_picture attribute
+    // Image URL: entity takes priority over direct URL config
     const imageUrl = imageState
       ? (imageState.attributes["entity_picture"] as string | undefined) ?? ""
-      : "";
+      : (vehicle_image_url ?? "");
 
     // Charging status label
     const chargingLabel = this._chargingLabel(chargingState, batteryPct, t);

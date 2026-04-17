@@ -51,6 +51,8 @@ export interface VolvoCardConfig {
   engine_stop_entity?: string;
   /** Entity ID of a camera or image entity whose entity_picture provides the vehicle image */
   vehicle_image_entity?: string;
+  /** Direct URL to a vehicle image, used as fallback when vehicle_image_entity is not set */
+  vehicle_image_url?: string;
 }
 
 /** Events fired by the card editor element */

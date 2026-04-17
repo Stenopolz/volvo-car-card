@@ -34,5 +34,6 @@ export const en: Translations = {
     engine_start_entity: "Engine start entity",
     engine_stop_entity: "Engine stop entity",
     vehicle_image_entity: "Vehicle image entity",
+    vehicle_image_url: "Vehicle image URL",
   },
 };

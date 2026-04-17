@@ -48,6 +48,10 @@ const SCHEMA = [
     name: "vehicle_image_entity",
     selector: { entity: { filter: [{ domain: "camera" }, { domain: "image" }] } },
   },
+  {
+    name: "vehicle_image_url",
+    selector: { text: {} },
+  },
 ];
 
 /**

@@ -34,5 +34,6 @@ export const sv: Translations = {
     engine_start_entity: "Motorstartsenhet",
     engine_stop_entity: "Motorstopenhet",
     vehicle_image_entity: "Fordonsbild",
+    vehicle_image_url: "Fordonsbildens URL",
   },
 };
