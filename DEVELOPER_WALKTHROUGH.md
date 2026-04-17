@@ -281,7 +281,18 @@ export interface VolvoCardConfig {
   type: string;
   name?: string;
   battery_entity?: string;
-  // ...all other optional config fields
+  battery_range_entity?: string;
+  fuel_entity?: string;
+  fuel_range_entity?: string;
+  lock_entity?: string;
+  charging_status_entity?: string;
+  climate_entity?: string;
+  engine_start_entity?: string;
+  engine_stop_entity?: string;
+  /** Camera/image entity — takes priority over vehicle_image_url */
+  vehicle_image_entity?: string;
+  /** Direct URL fallback when no image entity is configured */
+  vehicle_image_url?: string;
 }
 ```
 
@@ -473,7 +484,7 @@ The CSS is injected fresh on every `_render()` call. This is not ideal for perfo
 }
 ```
 
-`:host` refers to the custom element itself (the `<volvo-car-card>` tag in the outer DOM). Because elements are `inline` by default in HTML, you must explicitly set `display: block`. `width/height: 100%` makes the card fill whatever slot HA assigns it.
+`:host` refers to the custom element itself (the `<volvo-car-card>` tag in the outer DOM). `display: block` is required because custom elements are `inline` by default. `height: 100%` lets the card fill an explicit grid cell in **sections view**. In **masonry view** the parent provides no height, so `height: 100%` resolves to zero — `min-height: 320px` on `.card-root` acts as the floor in that case.
 
 #### Flexbox layout
 
@@ -481,17 +492,23 @@ The CSS is injected fresh on every `_render()` call. This is not ideal for perfo
 .card-root {
   display: flex;
   flex-direction: column;  /* children stack vertically */
+  height: 100%;
+  min-height: 320px;       /* floor for masonry view where parent has no explicit height */
 }
 .hero-zone {
-  flex: 1;        /* "take all remaining space" */
-  min-height: 0;  /* allow shrinking below content size */
+  flex: 1;                 /* "take all remaining space" */
+  min-height: 160px;       /* ensures the image area is never fully squashed */
 }
 .actions-bar {
-  flex-shrink: 0; /* "do not shrink — always show buttons" */
+  flex-shrink: 0;          /* "do not shrink — always show buttons" */
 }
 ```
 
-Flexbox is the browser equivalent of Android's `LinearLayout`. `flex: 1` on a child is like `android:layout_weight="1"`. `flex-shrink: 0` means "don't compress this element even under space pressure" — like `wrap_content` with `GONE`-proof behavior.
+Flexbox is the browser equivalent of Android's `LinearLayout`. `flex: 1` on a child is like `android:layout_weight="1"`. `flex-shrink: 0` means "don't compress this element even under space pressure".
+
+The dual `height: 100% + min-height` pattern is the standard solution for cards that must work in both HA dashboard views:
+- **Sections view** — HA's CSS grid assigns an explicit height to the card slot; `height: 100%` resolves to that height and the card fills it.
+- **Masonry view** — the card slot has no explicit height; `height: 100%` resolves to zero, but `min-height: 320px` takes over as the minimum.
 
 #### CSS Custom Properties (variables)
 
@@ -501,17 +518,19 @@ background: var(--ha-card-background, #f4f4f3);
 
 `var(--ha-card-background, #f4f4f3)` reads the CSS variable `--ha-card-background` from the HA theme, falling back to `#f4f4f3` if it's not defined. This allows the card to automatically adopt the user's chosen HA theme colors. Think of it like reading a value from Android's `Theme.resolveAttribute()`.
 
-#### Container Query Units (`cqh`)
+#### Container Query Units (`cqw`)
 
 ```css
 .range-value {
-  font-size: clamp(1.8rem, 12cqh, 3.5rem);
+  font-size: clamp(1.8rem, 8cqw, 3.5rem);
 }
 ```
 
-`cqh` = **container query height** unit. `12cqh` = 12% of the nearest container's height. The "container" here is `.card-root`, which we declared with `container-type: size`. 
+`cqw` = **container query width** unit. `8cqw` = 8% of the nearest container's width. The "container" here is `.card-root`, declared with `container-type: inline-size` (width-only containment — sufficient because the card's width is always known, even in masonry view where height is not).
 
-`clamp(min, preferred, max)` = clamp the value between min and max. This makes the range number fluid: small on a compact card, large on a tall one. There's no direct Android equivalent — the closest is `ConstraintLayout` percentage dimensions combined with `sp` text sizing.
+`clamp(min, preferred, max)` clamps the value between min and max. This makes the range number fluid: small on a narrow card, large on a wide one. There's no direct Android equivalent — the closest is `ConstraintLayout` percentage dimensions combined with `sp` text sizing.
+
+> **Why `inline-size` and not `size`?** `container-type: size` requires an explicit height on the container, which breaks in masonry view where height is content-driven. `inline-size` only tracks width, so it works in both views.
 
 #### CSS Grid
 
@@ -885,7 +904,7 @@ A quick reference for the CSS patterns in `styles.ts`.
 | `display: grid; grid-template-columns: 22px 46px 1fr auto` | `.status-row` | `ConstraintLayout` with chains |
 | `position: absolute; inset: 0` | `.energy-bg` | `FrameLayout` fill parent |
 | `var(--ha-card-background, #f4f4f3)` | `.card-root` | `theme.resolveAttribute(R.attr.cardBackground)` |
-| `clamp(1.8rem, 12cqh, 3.5rem)` | `.range-value` | Proportional SP sizing |
+| `clamp(1.8rem, 8cqw, 3.5rem)` | `.range-value` | Proportional SP sizing |
 | `overflow: hidden` | `.card-root` | `clipChildren="true"` |
 | `border-radius: 24px` | `.card-root` | `ShapeAppearance` |
 | `filter: drop-shadow(...)` | `.car-image` | `CardView` elevation shadow |
@@ -908,9 +927,14 @@ A quick reference for the CSS patterns in `styles.ts`.
    ```typescript
    { name: "horn_entity", selector: { entity: { filter: [{ domain: "button" }] } } }
    ```
-   And add a label in `LABELS`:
+   Then add the label to every language file in `src/i18n/` (e.g. `en.ts`):
    ```typescript
-   horn_entity: "Horn entity (button)",
+   // inside the editor: { ... } block
+   horn_entity: "Horn entity",
+   ```
+   And to the `Translations` interface in `src/i18n/index.ts`:
+   ```typescript
+   horn_entity: string;
    ```
 
 3. In `src/volvo-car-card.ts`, destructure the new field in `_render()`:

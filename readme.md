@@ -2,7 +2,7 @@
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 [![ha_version](https://img.shields.io/badge/homeassistant-2024.1.0%2B-yellow.svg)](https://www.home-assistant.io)
-[![version](https://img.shields.io/badge/version-0.1.1-green.svg)](#)
+[![version](https://img.shields.io/badge/version-0.1.2-green.svg)](#)
 [![maintained](https://img.shields.io/maintenance/yes/2026.svg)](#)
 
 A custom [Home Assistant](https://www.home-assistant.io/) Lovelace card for displaying and controlling your Volvo vehicle through the [Volvo Cars integration](https://www.home-assistant.io/integrations/volvo/).
@@ -43,20 +43,25 @@ Or via the UI: **Settings → Dashboards → ⋮ → Resources → Add resource*
 3. Use the visual editor to select your entities — the card will auto-discover Volvo entities if they are already set up.
 
 ## Setting up the car image
-1. On your HA instance go to Settings -> Developer Tools -> Actions tab
-2. Look for `volvo.get_image_url` action
-3. Select your volvo car entity and choose `Exterior front` image type. You can use any image, but it might look ugly
-4. Peform action and copy image URL from the response
-5. Go to Settings -> Devices & Services -> Helpers
-6. Click on `Create helper`
-7. Select `Template`
-8. Select `Image`
-9. Give it a meaningful name
-10. Paste URL in URL section of the config
-11. Image should be displayed in the preview
-12. Save and exit
 
-Now you could set image entity in the configurator parameters.
+There are two ways to provide a vehicle image.
+
+### Option A — Direct URL (simpler)
+
+1. In HA go to **Settings → Developer Tools → Actions**.
+2. Find the `volvo.get_image_url` action.
+3. Select your vehicle entity and choose `Exterior front` (you may use other images, but they might look odd).
+4. Perform the action and copy the image URL from the response.
+5. Paste it into the **Vehicle image URL** field in the card editor.
+
+### Option B — Image helper entity (updates automatically)
+
+1. Follow steps 1–4 above to get the image URL.
+2. Go to **Settings → Devices & Services → Helpers → Create helper → Template → Image**.
+3. Give it a meaningful name, paste the URL into the URL field, and save.
+4. Set the resulting `image.*` entity in the **Vehicle image entity** field in the card editor.
+
+> **Priority:** if both fields are set, the image entity always wins.
 
 ## Configuration
 
@@ -78,7 +83,8 @@ The card supports full configuration through the UI editor.
 | `climate_entity` | entity | optional | Button entity to start remote climatization (e.g. `button.xc40_start_climatization`). |
 | `engine_start_entity` | entity | optional | Button entity to start the engine remotely. |
 | `engine_stop_entity` | entity | optional | Button entity to stop the engine remotely. |
-| `vehicle_image_entity` | entity | optional | Camera or image entity whose `entity_picture` attribute provides the vehicle photo (e.g. `image.xc40_exterior`). Falls back to a generic car silhouette when not set. |
+| `vehicle_image_entity` | entity | optional | Camera or image entity whose `entity_picture` attribute provides the vehicle photo (e.g. `image.xc40_exterior`). Takes priority over `vehicle_image_url`. Falls back to a generic car silhouette when neither is set. |
+| `vehicle_image_url` | string | optional | Direct URL to a vehicle image. Used when `vehicle_image_entity` is not set. Useful for static images or URLs obtained from the Volvo API. |
 
 ### Example YAML
 
@@ -95,6 +101,7 @@ climate_entity: button.xc40_start_climatization
 engine_start_entity: button.xc40_start_engine
 engine_stop_entity: button.xc40_stop_engine
 vehicle_image_entity: image.xc40_exterior
+vehicle_image_url: https://example.com/my-car.png  # used only if entity is not set
 ```
 
 ### Vehicle Types
